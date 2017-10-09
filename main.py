@@ -60,6 +60,7 @@ def login():
 
     email = request.form['email']
     pasw = request.form['pssw']
+    
     consulta = 'SELECT email, pasw FROM usuarios WHERE email = "%s";' %email
     result = run_query(consulta)
     if result:
@@ -85,7 +86,7 @@ def register():
         pasw = request.form['pssw']
         paswc = request.form['psswc']
         terms = request.form['terms']
-
+        # Agregar comprobación de usuario existente
         if name and lastName and email and pasw and paswc and terms:
             if terms == "True":
                 if pasw == paswc:
