@@ -1,0 +1,7 @@
+# Empty CSS file for your own CSS
+input[type="text"],
+input[type="text"],
+textarea,
+textarea, form-control{
+    background: blueviolet;
+}
