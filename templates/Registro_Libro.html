@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Bootstrap 3, from LayoutIt!</title>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+	<link href="../static/css/style.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Amaranth|Bevan|Chewy|Rye|Ultra" rel="stylesheet">
+	<link href="../static/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+	
+	
+  </head>
+  <style>
+	  h4{
+		  font-family: Amaranth;
+		  color: #0B085D;
+	  }
+	  h3{
+		  font-family: Ultra; 
+		  color: #0E0B51;
+		  
+	  }
+	  
+	  .Input{
+		
+		  background-color: #C6DFE7;
+		  border-color: #9A99C8;
+	  }
+
+	  .Input:hover{
+		  transition: .8s;
+		  
+	  }
+	  .Input:focus{
+		border-color:#0B085D;
+	  }
+	  fieldset{
+		  transition: 2s;
+		  margin-bottom: 500px;
+		  border-color: gray;
+		  border-radius: 20px;
+	  }
+
+	  .mybotton{
+		width: 50%; 
+		background-color: #4038ED;
+		color:white;
+		  font-size: 20px;
+	  }
+	  .mybotton:hover, .mybotton:active{
+		 transition: 0.3s;
+		 background: #7974E7;
+		 color:black;
+	  }
+	  .mybotton:focus{
+		  transition: 0.2s;
+		  background:  gray;
+	  }
+	  .Cuadro{
+		margin-top: 60px;
+		 
+	  }
+	  .Cuadro_1{
+		  overflow: hidden;
+		 
+		  padding: 50px 50px 55px 50px;
+		  background: #A4DBDF;
+		  opacity: 0.35S;
+		  border-radius: 10px 10px 10px 10px;
+		  
+		  box-shadow: 0px 0px 30px #0B085D;
+		 
+	
+	  		 text-align: left;
+
+		 
+		  }
+		
+		.Cuadro0{
+			float: center;
+			text-align: center;
+			font-size: 60px;
+		}
+
+
+  </style>
+
+  <body>
+	
+    <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="jumbotron">
+				<h2>
+					Hello, world!
+				</h2>
+				<p>
+					This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.
+				</p>
+				<p>
+					<a class="btn btn-primary btn-large" href="#">Learn more</a>
+				</p>
+			</div>
+
+	
+	<div class= "row">
+
+		<fieldset class="col-md-6 col-md-offset-3 Cuadro_1">
+			<form role="form" action = "/registrarLibro" method = "POST" >
+
+				<div class="Cuadro0">
+						
+						<h3> REGRISTRO DE LIBRO</h3><i class="fa fa-list-alt" aria-hidden="true"></i>
+				</div>
+			
+				<div class= "Cuadro">
+					<div class="form-group">
+					 
+					<label for="titulo">
+						<h4>
+						Título
+						</h4>
+					</label>
+					<input type="text" class="form-control Input" id="titulo" name= "Registro" >
+					</div>
+				<div class="form-group">
+					 
+					<label for="autor">
+						<h4>Autor</h4>
+					</label>
+					<input type="text" class="form-control Input" id="autor" name= "Registro">
+				</div>
+				<div class="form-group">
+						
+					   <label for="issn">
+							<h4>	ISSN/ISBN</h4>
+					   </label>
+					   <input type="text" class="form-control Input" id="issn" name= "Registro">
+				</div>
+				<div class="form-group">
+
+						<label for="resena">
+								<h4>	Reseña</h4>
+						   </label>
+						   <input type="text" class="form-control Input" id="resena" name= "Registro">
+					   </div>
+				<div class="form-group">
+							
+						<label for="editorial">
+								<h4>Editorial</h4>
+						</label>
+						<input type="text" class="form-control Input" id="editorial" name= "Registro">
+					</div>
+					<label for="portada">
+							<h4>	Portada</h4>
+						</label>
+						<input type="file" id="portada Input" name= "Registro">
+				<div class="form-group">
+											   
+						<label for="link">
+								<h4>	Link</h4>
+						</label>
+						<input type="text" class="form-control Input" id="link" name= "Registro">
+					</div>
+				<div class="form-group">
+	   
+						<label for="numero_pag">
+								<h4>	 Número de páginas</h4>
+						</label>
+						<input type="text" class="form-control Input" id="numero_pag" name= "Registro">
+					</div>
+				<div class="form-group">
+							
+				 		<label for="ano">
+								<h4>Año</h4>
+						</label>
+						<input type="text" class="form-control Input" id="ano" name= "Registro">
+					</div>					
+	
+							
+				<button type="submit" class="btn btn-default center-block mybotton Input">
+							Enviar
+				</button>
+			</div>
+			</form>
+		</fielset>
+	
+		</div>
+	
+	</div>
+	<div class="col-md-3">
+	</div>
+	
+	</div>
+</div>
+
+    <script src="../static/js/jquery.min.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+	<script src="../static/js/scripts.js"></script>
+	
+  </body>
+</html>

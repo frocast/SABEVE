@@ -1,0 +1,45 @@
+<div class="row">
+<div class="col-md-3"></div>
+<div class="col-md-6">
+      <div class="box-header with-border">
+        <h3 class="box-title">Búsqueda</h3>
+      </div>
+      <!-- /.box-header -->
+      <!-- form start -->
+      <form class="form-horizontal" method="post" action="/Articulos">
+        <div class="box-body">
+         <div class="form-group">
+              <label for="exampleInputEmail1">Palabras Clave</label>
+              <input name="pclave" type="email" class="form-control" id="exampleInputEmail1" placeholder="Autor, ISSN o Título">
+          </div>
+          <div class="form-group">
+            <label>Idioma</label>
+              <select name="idioma" class="form-control select2" style="width: 100%;">
+                <option selected="selected">Español</option>
+                <option>Español</option>
+                <option>Inglés</option>
+                <option>Aleman</option>
+                <option>Portugues</option>
+                <option>Frances</option>
+              </select>
+          </div>
+          <div class="form-group">
+              <label>De la Fecha a la fecha:</label>
+              <div class="input-group">
+                <div class="input-group-addon">
+                  <i class="fa fa-calendar"></i>
+                </div>
+                <input type="text" class="form-control pull-right" id="reservation">
+              </div>
+              <!-- /.input group -->
+            </div>
+        </div>
+        <!-- /.box-body -->
+
+        <div class="box-footer">
+          <button type="submit" class="btn btn-flat bg-purple">Consultar</button>
+        </div>
+      </form>
+      </div>
+  <div class="col-md-3"></div>
+</div>
