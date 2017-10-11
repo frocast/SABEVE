@@ -1,6 +1,30 @@
+{% for item in 1,2,3 %}
 <div class="row">
-<div class="col-md-1"></div>
-        <div class="col-md-10">
+<div class="col-md-3">
+    <ul class="sidebar-menu" data-widget="tree">
+        <li class="header">OPCIONES</li>
+        <!-- Optionally, you can add icons to the links -->
+        <li>
+            <a href="/moocs">
+              <i class="fa fa-th-list"></i> 
+              <span>Nuevo Tema</span>
+            </a>
+          </li>
+          <li>
+              <a href="/moocs">
+                <i class="fa fa-th-list"></i> 
+                <span>Modificar</span>
+              </a>
+            </li>
+          <li>
+            <a href="/moocs">
+              <i class="fa fa-th-list"></i> 
+              <span>MOOC's</span>
+            </a>
+          </li>
+      </ul>
+</div>
+        <div class="col-md-7">
           <div class="box box-solid">
             <div class="box-header with-border">
               <i class="fa fa-text-width"></i>
@@ -19,13 +43,7 @@
             <!-- /.box-body -->
           </div>
           <!-- /.box -->
-        </div>
-        <div class="col-md-1"></div>
-    </div>
-        <!-- ./col -->
-        <div class="row">
-                <div class="col-md-1"></div>
-                        <div class="col-md-10">
+
                           <div class="box box-solid">
                             <div class="box-header with-border">
                               <i class="fa fa-text-width"></i>
@@ -35,7 +53,7 @@
                             <!-- /.box-header -->
                             <div class="box-body">
                               <dl class="dl-horizontal">
-                                    <dt>Descripción</dt>
+                                    <dt>{{ item }}</dt>
                                     <dd>Describe el tema, o las dudas presentees en un tema particular.</dd>
                                     <dt>Creador de tema</dt>
                                     <dd>Fabiola Vela.</dd>
@@ -45,6 +63,7 @@
                           </div>
                           <!-- /.box -->
                         </div>
-                        <div class="col-md-1"></div>
+                        <div class="col-md-2"></div>
                     </div>
                         <!-- ./col -->
+{% endfor %}
