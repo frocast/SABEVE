@@ -18,7 +18,8 @@
 import logging
 
 
-import jinja2, os
+import jinja2, os, time
+
 from flask import Flask, render_template, request, redirect, session
 from dbconnect import connection, run_query           
 
@@ -173,14 +174,36 @@ def moocs():
     nombre = request.form['idioma']
     return nombre  
 
+# inicio de logica para foro
+
 @app.route('/foro', methods=['GET','POST'])
 def foro():
     """Return a friendly HTTP greeting."""
     
     if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('foro_temas.html').render(), "Foros de discusion", 'Resulva cualquier duda')
+        consulta = 'SELECT * FROM foro WHERE autor = "%s";' %session['email']
+        resultados = run_query(consulta)
+        if resultados:
+            template = JINJA_ENVIRONMENT.get_template('foro_temas.html')
+            html_content = { 'resultado':resultados}
+            #print html_content
+            return template.render(html_content)
+            #return "pass" #rendering_template(JINJA_ENVIRONMENT.get_template('foro_temas.html').render(), "Foros de discusion", 'Resulva cualquier duda')
     nombre = request.form['idioma']
     return nombre 
+
+@app.route('/foro/nuevo', methods=['GET','POST'])
+def foro_nuevo():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':
+        return rendering_template(JINJA_ENVIRONMENT.get_template('form_nu_foro.html').render(), "Foros de discusion", 'Resulva cualquier duda')
+    tema = request.form['subject']
+    mensaje = request.form['message']
+    fecha = time.strftime("%x")
+    if run_query('INSERT INTO foro (autor, titulo, mensaje, fecha) VALUES ("%s", "%s", "%s", CURDATE());' %(session['email'], tema, mensaje)):
+        return rendering_template(JINJA_ENVIRONMENT.get_template('form_nu_foro.html').render(), "Foros de discusion", 'Resulva cualquier duda')
+    return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(), "Foros de discusion", 'Resulva cualquier duda')
 
 @app.route('/mensajes_foro', methods=['GET','POST'])
 def mensajes_foro():
@@ -190,6 +213,9 @@ def mensajes_foro():
         return rendering_template(JINJA_ENVIRONMENT.get_template('mensajes_foro.html').render(), "", '')
     nombre = request.form['idioma']
     return nombre 
+
+# Fin de logica para foro
+# inicio de logica para cendario
 
 @app.route('/calendar', methods=['GET','POST'])
 def calendar():

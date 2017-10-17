@@ -22,7 +22,7 @@ def run_query(query = ''):
         data = cursor.fetchall()   # Traer los resultados de un select 
     else: 
         conn.commit()              # Hacer efectiva la escritura de datos 
-        data = None 
+        data = False 
     
     cursor.close()                 # Cerrar el cursor 
     conn.close()                   # Cerrar la conexión 
