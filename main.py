@@ -17,7 +17,6 @@
 # [START app]
 import logging
 
-
 import jinja2, os, time
 
 from flask import Flask, render_template, request, redirect, session
@@ -37,7 +36,7 @@ def rendering_template(content_rendered = None, head_title = '', head_descriptio
     """ Main template rendering """
 
     template = JINJA_ENVIRONMENT.get_template(main_template)
-    html_content = { 'content':content_rendered, 'head_title':head_title, 'head_description':head_description, 'email':session['email'] }
+    html_content = { 'content':content_rendered, 'head_title':head_title, 'head_description':head_description, 'email':session['email'], 'nombre':session['nombre'] }
     return template.render(html_content)
 
 @app.route('/', methods=['GET','POST'])
@@ -62,16 +61,21 @@ def login():
     email = request.form['email']
     pasw = request.form['pssw']
     
-    consulta = 'SELECT email, pasw FROM usuarios WHERE email = "%s";' %email
+    consulta = 'SELECT email, pasw, Nombre FROM usuarios WHERE email = "%s";' %email
     result = run_query(consulta)
     if result:
         if result[0][0] == email and result[0][1] == pasw:
             session['email'] = email
+            session['nombre'] = result[0][2]
     return redirect('/')
 
 @app.route('/logout', methods=['GET','POST'])
 def logout():
+    print len(session)
     session.pop('email',None)
+    session.pop('nombre',None)    
+    print len(session)
+    # revisar funcion pop session.pop('apellido',None)
     return redirect('/login')    
 
 @app.route('/register', methods=['GET','POST'])
@@ -94,6 +98,7 @@ def register():
                     query = 'INSERT INTO usuarios (Nombre, Apellido, email, pasw) VALUES ("%s", "%s", "%s", "%s");' %(name, lastName, email, pasw)
                     print run_query(query)
                     session['email'] = email
+                    session['nombre'] = name
                     return redirect('/')
                 else:
                     return render_template('/register.html', errortype=2)
@@ -181,38 +186,83 @@ def foro():
     """Return a friendly HTTP greeting."""
     
     if request.method == 'GET':
-        consulta = 'SELECT * FROM foro WHERE autor = "%s";' %session['email']
+        # PARA MODIFICAR EL TEMA consulta = 'SELECT * FROM foro WHERE autor = "%s";' %session['email']
+        consulta = 'SELECT * FROM foro;'
         resultados = run_query(consulta)
         if resultados:
             template = JINJA_ENVIRONMENT.get_template('foro_temas.html')
             html_content = { 'resultado':resultados}
             #print html_content
-            return template.render(html_content)
+            return rendering_template(template.render(html_content),"Foros de discusion","Resulva cualquier duda")
             #return "pass" #rendering_template(JINJA_ENVIRONMENT.get_template('foro_temas.html').render(), "Foros de discusion", 'Resulva cualquier duda')
-    nombre = request.form['idioma']
-    return nombre 
+        else:
+            template = JINJA_ENVIRONMENT.get_template('foro_temas.html')
+            html_content = { 'resultado': False}
+            return rendering_template(template.render(html_content),"Foros de discusion","Resulva cualquier duda")
+            
+    #nombre = request.form['idioma']
+    return redirect("/")
 
 @app.route('/foro/nuevo', methods=['GET','POST'])
 def foro_nuevo():
     """Return a friendly HTTP greeting."""
     
     if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('form_nu_foro.html').render(), "Foros de discusion", 'Resulva cualquier duda')
+        return rendering_template(JINJA_ENVIRONMENT.get_template('form_nu_foro.html').render(), "Foros de discusion", 'Crear nuevo tema')
     tema = request.form['subject']
     mensaje = request.form['message']
     fecha = time.strftime("%x")
-    if run_query('INSERT INTO foro (autor, titulo, mensaje, fecha) VALUES ("%s", "%s", "%s", CURDATE());' %(session['email'], tema, mensaje)):
+    if run_query('INSERT INTO foro (autor, titulo, mensaje, fecha) VALUES ("%s", "%s", "%s", NOW());' %(session['email'], tema, mensaje)):
         return rendering_template(JINJA_ENVIRONMENT.get_template('form_nu_foro.html').render(), "Foros de discusion", 'Resulva cualquier duda')
-    return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(), "Foros de discusion", 'Resulva cualquier duda')
+    return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(), "Foros de discusion", 'Tema creado exitosamente')
 
-@app.route('/mensajes_foro', methods=['GET','POST'])
-def mensajes_foro():
+@app.route('/foro/mensajes:<tema_id><user>', methods=['GET','POST'])
+def foro_contenido(tema_id, user):
     """Return a friendly HTTP greeting."""
     
     if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('mensajes_foro.html').render(), "", '')
-    nombre = request.form['idioma']
-    return nombre 
+        info_tema = run_query('SELECT * FROM foro WHERE id_tema = "%s";' %tema_id)
+        info_mensajes = run_query('SELECT * FROM mensajes WHERE id_tema = "%s";' %tema_id)
+        if info_tema:            
+            return rendering_template(JINJA_ENVIRONMENT.get_template('mensajes_foro.html').render({'info_tema':info_tema,'info_mensajes':info_mensajes}), " ", " ")
+        else:            
+            return rendering_template(JINJA_ENVIRONMENT.get_template('mensajes_foro.html').render(), "", "")    
+    return "metodo post" 
+
+@app.route('/foro/messagesave', methods=['POST'])
+def messasgesave():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'POST':
+        id_tema = request.form['tema_id']
+        print id_tema
+        mensaje = request.form['mensaje']
+        print mensaje
+        run_query('INSERT INTO mensajes (email, id_tema, fecha, mensaje) VALUES ("%s", "%s", NOW(), "%s");' %(session['email'], id_tema, mensaje))
+        url = '/foro/mensajes:%s%s' %(id_tema, session['email'])
+        return redirect(url) 
+    return "metodo post" 
+
+@app.route('/foro/modificar', methods=['GET','POST'])
+def foro_modificar():
+    """Return a friendly HTTP greeting."""
+        
+    if request.method == 'GET':
+        consulta = 'SELECT * FROM foro WHERE autor = "%s";' %session['email']
+        resultados = run_query(consulta)
+        if resultados:
+            template = JINJA_ENVIRONMENT.get_template('foro_temas.html')
+            html_content = { 'resultado':resultados}
+            #print html_content
+            return rendering_template(template.render(html_content),"Foros de Discusion","Actualice la informacion o elimine")
+            #return "pass" #rendering_template(JINJA_ENVIRONMENT.get_template('foro_temas.html').render(), "Foros de discusion", 'Resulva cualquier duda')
+        else:
+            template = JINJA_ENVIRONMENT.get_template('foro_temas.html')
+            html_content = { 'resultado': False}
+            return rendering_template(template.render(html_content),"Foros de Discusion"," ")
+            
+    #nombre = request.form['idioma']
+    return redirect("/")
 
 # Fin de logica para foro
 # inicio de logica para cendario
@@ -236,7 +286,7 @@ def sitios():
         #return render_template('starter.html')
         return rendering_template(JINJA_ENVIRONMENT.get_template('sitios.html').render(), 'sitios de Interes', '') #prueba_template.render(valores)#render_template('starter.html', creadores = jinja2.Template.render(render_template('formulario.html')))	
     return "Acceso por metodo post"
-
+####### Version anterior
 @app.route('/inicioBiblioteca', methods=["GET", "POST"])
 def inicioBiblioteca():
 

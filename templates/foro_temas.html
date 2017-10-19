@@ -1,71 +1,67 @@
 <div class="row">
 <div class="col-md-3">
-    <ul class="sidebar-menu" data-widget="tree">
-        <li class="header">OPCIONES</li>
+  <ul class="sidebar-menu" data-widget="tree">
+    <li class="header">OPCIONES</li>
         <!-- Optionally, you can add icons to the links -->
         <li>
-            <a href="/foro/nuevo">
-              <i class="fa fa-th-list"></i> 
-              <span>Nuevo Tema</span>
-            </a>
-          </li>
-          <li>
-              <a href="/foro/modificar">
-                <i class="fa fa-th-list"></i> 
-                <span>Modificar</span>
-              </a>
-            </li>
-          <li>
-            <a href="/foro/">
-              <i class="fa fa-th-list"></i> 
-              <span>Otra seccion</span>
-            </a>
-          </li>
+          <a href="/foro/nuevo">
+            <i class="fa fa-th-list"></i> 
+            <span>Nuevo Tema</span>
+          </a>
+        </li>
+        <li>
+          <a href="/foro/modificar">
+            <i class="fa fa-th-list"></i> 
+            <span>Modificar</span>
+          </a>
+        </li>
+        <li>
+          <a href="/foro/mensajes">
+            <i class="fa fa-th-list"></i> 
+            <span>Otra seccion</span>
+          </a>
+        </li>
       </ul>
-</div>
-        <div class="col-md-7">
-          <div class="box box-solid">
-            <div class="box-header with-border">
-              <i class="fa fa-text-width"></i>
-
-              <h3 class="box-title"><a href="/mensajes_foro">Tema del foro</a></h3>
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body">
-              <dl class="dl-horizontal">
-                <dt>Descripción</dt>
-                <dd>Describe el tema, o las dudas presentees en un tema particular.</dd>
-                <dt>Creador de tema</dt>
-                <dd>Fabiola Vela.</dd>
-              </dl>
-            </div>
-            <!-- /.box-body -->
+    </div>
+    {%- if resultado -%}
+    <div class="col-md-8">
+      <!-- /.box -->
+      {%- for item in resultado -%}
+      <div class="box box-solid">
+        <div class="box-header with-border">
+          <i class="fa fa-share"></i>                              
+          <h3 class="box-title"><a href="/foro/mensajes:{{ item[0] }}{{ item[1]}}">{{ item[2] }}</a></h3>  
+        </div>
+        <div class="box-header with-border">                    
+          <h5 class="text-muted">Fecha de publicación: {{ item[4] }}</h5>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+          <dl class="dl-horizontal">                                
+            <dt>Descripción</dt>
+            <dd>{{item[3]}}</dd>
+            <dt>Publicado por</dt>
+            <dd>{{ item[1] }}</dd>                                
+          </dl>
+        </div>
+        <!-- /.box-body -->
+      </div>
+      {%- endfor -%}
+      <!-- /.box -->
+    </div>
+    {%- else -%}
+    <div class="col-md-8">
+      <div class="box box-solid">
+          <div class="box-header with-border">
+            <i class="fa fa-share"></i>                              
+            <h3 class="box-title"><a href=""> Sin temas</a></h3>  
           </div>
-          <!-- /.box -->
-          {%- for item in resultado -%}
-                          <div class="box box-solid">
-                            <div class="box-header with-border">
-                              <i class="fa fa-text-width"></i>
-                              
-                              <h3 class="box-title"><a href="">Nuevo Tema {{ item[0] }}</a></h3>
-                            </div>
-                            <!-- /.box-header -->
-                            <div class="box-body">
-                              <dl class="dl-horizontal">
-                                
-                                    <dt>{{ item[1] }}</dt>
-                                
-                                    <dd>Describe el tema, o las dudas presentees en un tema particular.</dd>
-                                    <dt>Creador de tema</dt>
-                                    <dd>Fabiola Vela.</dd>
-                                
-                              </dl>
-                            </div>
-                            <!-- /.box-body -->
-                          </div>
-                          {%- endfor-%}
-                          <!-- /.box -->
-                        </div>
-                        <div class="col-md-2"></div>
-                    </div>
-                        <!-- ./col -->
+          <div class="box-header with-border">                    
+            <h5 class="text-muted">Crea un tema de discusión</h5>
+          </div>
+        </div>
+    </div>
+    {%- endif -%}
+    <div class="col-md-1"></div>
+</div>
+<!-- ./col -->

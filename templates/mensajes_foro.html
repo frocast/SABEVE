@@ -1,27 +1,23 @@
 <div class="row">
-        <div class="col-xs-3">
+        <div class="col-md-3">
           <p>menu lateral</p>
         </div>
-                <div class="col-xs-7">                        
+                <div class="col-md-7">                        
                 <!-- Post -->
-                <h3 class="box-title"><a href="/mensajes_foro">Tema del foro</a></h3>
+                <h3 class="box-title"><a href="/mensajes_foro">{{ info_tema[0][2] }}</a></h3>
                 <br>
                 <div class="post">
                   <div class="user-block">
                     <img class="img-circle img-bordered-sm" src="../static/dist/img/user_esime.jpg" alt="user image">
                         <span class="username">
-                          <a href="#">Fabiola Vela.</a>
+                          <a href="#">{{ info_tema[0][1] }}</a>
                           <a href="#" class="pull-right btn-box-tool"><i class="fa fa-times"></i></a>
                         </span>
-                    <span class="description">Publicación comparida - 7:30 PM Hoy</span>
+                    <span class="description">Publicación comparida - {{ info_tema[0][4] }}</span>
                   </div>
                   <!-- /.user-block -->
                   <p>
-                    Lorem ipsum represents a long-held tradition for designers,
-                    typographers and the like. Some people hate it and argue for
-                    its demise, but others ignore the hate as they create awesome
-                    tools to help create filler text for everyone from bacon lovers
-                    to Charlie Sheen fans.
+                    {{ info_tema[0][3] }}
                   </p>
                   <ul class="list-inline">
                     <li><a href="#" class="link-black text-sm"><i class="fa fa-share margin-r-5"></i> Compartir</a></li>
@@ -30,44 +26,40 @@
                     <li class="pull-right">
                       <a href="#" class="link-black text-sm"><i class="fa fa-comments-o margin-r-5"></i> Comentarios
                         (1)</a></li>
-                  </ul>
-
-                  <input class="form-control input-sm" type="text" placeholder="Escriba un comentario">
+                  </ul>              
                 </div>
                 <!-- /.post -->
-
+                {%- if info_mensajes -%}
+                {%- for item in info_mensajes -%}
                 <!-- Post -->
                 <div class="post clearfix">
                   <div class="user-block">
                     <img class="img-circle img-bordered-sm" src="../static/dist/img/user_esime.jpg" alt="User Image">
                         <span class="username">
-                          <a href="#">Fabiola Vela.</a>
+                          <a href="#">{{ item[0] }}</a>
                           <a href="#" class="pull-right btn-box-tool"><i class="fa fa-times"></i></a>
                         </span>
-                    <span class="description">Mensaje enviado - hace 3 días</span>
+                    <span class="description">Mensaje enviado - {{ item[2] }}</span>
                   </div>
                   <!-- /.user-block -->
                   <p>
-                    Lorem ipsum represents a long-held tradition for designers,
-                    typographers and the like. Some people hate it and argue for
-                    its demise, but others ignore the hate as they create awesome
-                    tools to help create filler text for everyone from bacon lovers
-                    to Charlie Sheen fans.
+                    {{ item[3] }}
                   </p>
-
-                  <form class="form-horizontal">
-                    <div class="form-group margin-bottom-none">
-                      <div class="col-sm-9">
-                        <input class="form-control input-sm" placeholder="Responder">
-                      </div>
-                      <div class="col-sm-3">
-                        <button type="submit" class="btn btn-danger pull-right btn-block btn-sm">Enviar</button>
-                      </div>
-                    </div>
-                  </form>
                 </div>
-            
-            
+                {%- endfor -%}
+                {%- endif -%}
+                
+                <form class="form-horizontal" method="post" action="/foro/messagesave">
+                  <div class="form-group margin-bottom-none">
+                    <div class="col-sm-9">
+                      <input name="mensaje" class="form-control input-sm" placeholder="Responder">
+                      <input name="tema_id" type="hidden" class="form-control input-sm" value="{{ info_tema[0][0] }}">
+                    </div>
+                    <div class="col-sm-3">
+                      <button type="submit" class="btn btn-danger pull-right btn-block btn-sm">Enviar</button>
+                    </div>
+                  </div>
+                </form>
           </div>
-            <div class="col-xs-2"></div>
+            <div class="col-md-2"></div>
 </div>
