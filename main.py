@@ -36,7 +36,7 @@ def rendering_template(content_rendered = None, head_title = '', head_descriptio
     """ Main template rendering """
 
     template = JINJA_ENVIRONMENT.get_template(main_template)
-    html_content = { 'content':content_rendered, 'head_title':head_title, 'head_description':head_description, 'email':session['email'], 'nombre':session['nombre'] }
+    html_content = { 'content':content_rendered, 'head_title':head_title, 'head_description':head_description, 'email':session['email'], 'nombre':session['nombre'], 'tipo':session['kind'] }
     return template.render(html_content)
 
 @app.route('/', methods=['GET','POST'])
@@ -61,19 +61,21 @@ def login():
     email = request.form['email']
     pasw = request.form['pssw']
     
-    consulta = 'SELECT email, pasw, Nombre FROM usuarios WHERE email = "%s";' %email
+    consulta = 'SELECT email, pasw, Nombre, knd FROM usuarios WHERE email = "%s";' %email
     result = run_query(consulta)
     if result:
         if result[0][0] == email and result[0][1] == pasw:
             session['email'] = email
             session['nombre'] = result[0][2]
+            session['kind'] = result[0][3]
     return redirect('/')
 
 @app.route('/logout', methods=['GET','POST'])
 def logout():
     print len(session)
     session.pop('email',None)
-    session.pop('nombre',None)    
+    session.pop('nombre',None)
+    session.pop('kind',None)   
     print len(session)
     # revisar funcion pop session.pop('apellido',None)
     return redirect('/login')    
@@ -88,17 +90,19 @@ def register():
         name = request.form['name']
         lastName = request.form['lastname']
         email = request.form['email']
+        knd = request.form['kind']
         pasw = request.form['pssw']
         paswc = request.form['psswc']
         terms = request.form['terms']
         # Agregar comprobación de usuario existente
-        if name and lastName and email and pasw and paswc and terms:
+        if name and lastName and email and pasw and paswc and terms and knd:
             if terms == "True":
                 if pasw == paswc:
-                    query = 'INSERT INTO usuarios (Nombre, Apellido, email, pasw) VALUES ("%s", "%s", "%s", "%s");' %(name, lastName, email, pasw)
+                    query = 'INSERT INTO usuarios (Nombre, Apellido, email, knd, pasw) VALUES ("%s", "%s", "%s", "%s", "%s");' %(name, lastName, email, knd, pasw)
                     print run_query(query)
                     session['email'] = email
                     session['nombre'] = name
+                    session['kind'] = knd
                     return redirect('/')
                 else:
                     return render_template('/register.html', errortype=2)
@@ -110,7 +114,11 @@ def register():
 @app.route('/libros', methods=['GET','POST'])
 def libros():
     """Return a friendly HTTP greeting."""
-    
+    if session['kind'] == "Admin" or session['kind'] == "Maestro":
+        print session['kind']
+    else:
+        print session['kind']
+            
     if request.method == 'GET':
         return rendering_template(JINJA_ENVIRONMENT.get_template('libros.html').render(), 'Libros', 'Consulte los materiales almaceados en la base de datos')
     nombre = request.form['nombres']

@@ -51,30 +51,35 @@
         {{ input('name', placeholder='Nombre(s)', icon='glyphicon-user', error='Campo Obligatorio', formtype='has-error') }}
         {{ input('lastname', placeholder='Apellido(s)', icon='glyphicon-user', error='Campo Obligatorio', formtype='has-error') }}
         {{ input('email', type='email', placeholder='Correo Electronico', icon='glyphicon-envelope', error='Campo Obligatorio', formtype='has-error') }}
+        {{ input('kind', type='text', placeholder='Maestro o Estudiante', icon='glyphicon-envelope', formtype='has-error', error='Campo Obligatorio') }}
         {{ input('pssw', type='password', placeholder='Contraseña', icon='glyphicon-lock', error='Campo Obligatorio', formtype='has-error') }}
         {{ input('psswc', type='password', placeholder='Confirmar Contraseña', icon='glyphicon-lock', error='Campo Obligatorio',formtype='has-error') }}
       {%- elif errortype==1 -%}        
         {{ input('name', placeholder='Nombre(s)', icon='glyphicon-user') }}
         {{ input('lastname', placeholder='Apellido(s)', icon='glyphicon-user') }}
         {{ input('email', type='email', placeholder='Correo Electronico', icon='glyphicon-envelope') }}
+        {{ input('kind', type='text', placeholder='Maestro o Estudiante', icon='glyphicon-envelope') }}
         {{ input('pssw', type='password', placeholder='Contraseña', icon='glyphicon-lock') }}
         {{ input('psswc', type='password', placeholder='Confirmar Contraseña', icon='glyphicon-lock', error='Debe aceptar los terminos' ) }}
       {%- elif errortype==2 -%}
         {{ input('name', placeholder='Nombre(s)', icon='glyphicon-user') }}
         {{ input('lastname', placeholder='Apellido(s)', icon='glyphicon-user') }}
         {{ input('email', type='email', placeholder='Correo Electronico', icon='glyphicon-envelope') }}
+        {{ input('kind', type='text', placeholder='Maestro o Estudiante', icon='glyphicon-envelope') }}
         {{ input('pssw', type='password', placeholder='Contraseña', icon='glyphicon-lock', error='Las contraseñas deben conicidir', formtype='has-error') }}
         {{ input('psswc', type='password', placeholder='Confirmar Contraseña', icon='glyphicon-lock', error='Las contraseñas deben conicidir', formtype='has-error') }}
       {%- elif errortype == 3 -%}
         {{ input('name', placeholder='Nombre(s)', icon='glyphicon-user') }}
         {{ input('lastname', placeholder='Apellido(s)', icon='glyphicon-user') }}
         {{ input('email', type='email', placeholder='Correo Electronico', icon='glyphicon-envelope') }}
+        {{ input('kind', type='text', placeholder='Maestro o Estudiante', icon='glyphicon-envelope') }}
         {{ input('pssw', type='password', placeholder='Contraseña', icon='glyphicon-lock', error='Las contraseñas deben conicidir', formtype='has-error') }}
         {{ input('psswc', type='password', placeholder='Confirmar Contraseña', icon='glyphicon-lock', error='Las contraseñas deben conicidir', formtype='has-error') }}      
       {%- else -%}
         {{ input('name', placeholder='Nombre(s)', icon='glyphicon-user') }}
         {{ input('lastname', placeholder='Apellido(s)', icon='glyphicon-user') }}
         {{ input('email', type='email', placeholder='Correo Electronico', icon='glyphicon-envelope') }}
+        {{ input('kind', type='text', placeholder='Maestro o Estudiante', icon='glyphicon-envelope') }}
         {{ input('pssw', type='password', placeholder='Contraseña', icon='glyphicon-lock') }}
         {{ input('psswc', type='password', placeholder='Confirmar Contraseña', icon='glyphicon-lock') }}              
       {%- endif %}
