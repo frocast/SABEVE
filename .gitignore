@@ -101,4 +101,4 @@ ENV/
 .mypy_cache/
 
 #Mac files
-.DS_store
+.DS_Store
