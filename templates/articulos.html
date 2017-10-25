@@ -2,16 +2,20 @@
 <div class="col-md-3"></div>
 <div class="col-md-6">
       <div class="box-header with-border">
-        <h3 class="box-title">Búsqueda</h3>
+        <h3 class="box-title">Registro de Nuevo Material</h3>
       </div>
       <!-- /.box-header -->
       <!-- form start -->
-      <form class="form-horizontal" method="post" action="/Articulos">
+      <form class="form-horizontal" method="post" action="/nuevoRegistro">
         <div class="box-body">
-         <div class="form-group">
-              <label for="exampleInputEmail1">Palabras Clave</label>
-              <input name="pclave" type="email" class="form-control" id="exampleInputEmail1" placeholder="Autor, ISSN o Título">
+          <div class="form-group">
+            <label for="exampleInputEmail1">Título</label>
+            <input name="titulo" type="text" class="form-control" id="exampleInputEmail1" placeholder="Título">
           </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">Autor</label>
+            <input name="autor" type="text" class="form-control" id="exampleInputEmail1" placeholder="Autor">
+        </div>
           <div class="form-group">
             <label>Idioma</label>
               <select name="idioma" class="form-control select2" style="width: 100%;">
@@ -24,14 +28,39 @@
               </select>
           </div>
           <div class="form-group">
-              <label>De la Fecha a la fecha:</label>
-              <div class="input-group">
-                <div class="input-group-addon">
-                  <i class="fa fa-calendar"></i>
-                </div>
-                <input type="text" class="form-control pull-right" id="reservation">
+              <label for="exampleInputEmail1">Fecha</label>
+              <input name="fecha" type="text" class="form-control" id="exampleInputEmail1" placeholder="Fecha de Publicación">
+          </div>
+          <div class="form-group">
+              <label>Tipo</label>
+              <div class="radio">
+                <label>
+                  <input name="tipo" value="Libro" type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked="">
+                  Libro
+                </label>
               </div>
-              <!-- /.input group -->
+              <div class="radio">
+                <label>
+                  <input name="tipo" value="Articulo" type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                  Artículo
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputEmail1">ISBN ó ISSN</label>
+                <input name="isbn-issn" type="text" class="form-control" id="exampleInputEmail1" placeholder="ISBN ó ISSN">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputEmail1">Reseña</label>
+                <input name="resena" type="text" class="form-control" id="exampleInputEmail1" placeholder="Reseña">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputEmail1">Editorial</label>
+                <input name="editorial" type="text" class="form-control" id="exampleInputEmail1" placeholder="Editorial">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputEmail1">Link</label>
+                <input name="link" type="text" class="form-control" id="exampleInputEmail1" placeholder="Link">
             </div>
         </div>
         <!-- /.box-body -->

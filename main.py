@@ -112,8 +112,10 @@ def register():
         else:
             return render_template('/register.html', errortype=0)
 
+# Biblioteca
+# Consulta cambiar libro nuevo_registro
 @app.route('/libros', methods=['GET','POST'])
-def libros():
+def consulta():
     """Return a friendly HTTP greeting."""
     if session['kind'] == "Admin" or session['kind'] == "Maestro":
         print session['kind']
@@ -125,23 +127,37 @@ def libros():
     nombre = request.form['nombres']
     return render_template('libros.html')
 
-@app.route('/Articulos', methods=['GET','POST'])
-def Articulos():
-    """Return a friendly HTTP greeting."""
-    
-    if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('articulos.html').render(), 'Articulos', 'Consulte los materiales almaceados en la base de datos')
-    nombre = request.form['idioma']
-    return nombre 
-
 @app.route('/Resultadoliar', methods=['GET','POST'])
-def Resultadoliar():
+def resultados():
     """Return a friendly HTTP greeting."""
     
     if request.method == 'GET':
         return rendering_template(JINJA_ENVIRONMENT.get_template('resultadoliar.html').render(), 'Consulta', 'Elementos encontrados')
     nombre = request.form['idioma']
-    return nombre     
+    return nombre
+
+@app.route('/nuevoRegistro', methods=['GET','POST'])
+def nuevo_registro():
+    """Return a friendly HTTP greeting."""
+    
+    #Comprobar que el acceso se realiza desde un perfil de maestro
+    if session['kind'] == "Alumno":
+        return redirect('/')
+
+    if request.method == 'GET':
+        return rendering_template(JINJA_ENVIRONMENT.get_template('articulos.html').render(), 'Articulos', 'Consulte los materiales almaceados en la base de datos')
+    idioma = request.form['idioma']
+    fecha = request.form['fecha']
+    titulo = request.form['titulo']
+    autor = request.form['autor']
+    tipo = request.form['tipo']
+    ISSN_ISBN = request.form['isbn-issn']
+    editorial = request.form['editorial']
+    resena = request.form['resena']
+    link = request.form['link']
+    query = 'INSERT INTO biblioteca (titulo, autor, ISSNISBN, tipo, editorial, fecha, idioma, resena, link) VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s");' %(titulo, autor, ISSN_ISBN, tipo, editorial, fecha, idioma, resena, link)
+    print run_query(query)
+    return render_template('success.html') 
 
 @app.route('/clase_material', methods=['GET','POST'])
 def clase_material():
