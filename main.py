@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 # [START app]
+""" Comentario"""
 import logging
 
 import jinja2, os, time
@@ -111,8 +112,10 @@ def register():
         else:
             return render_template('/register.html', errortype=0)
 
+# Biblioteca -----------------------------------------------------------
+# Consulta cambiar libro nuevo_registro
 @app.route('/libros', methods=['GET','POST'])
-def libros():
+def consulta():
     """Return a friendly HTTP greeting."""
     if session['kind'] == "Admin" or session['kind'] == "Maestro":
         print session['kind']
@@ -124,23 +127,57 @@ def libros():
     nombre = request.form['nombres']
     return render_template('libros.html')
 
-@app.route('/Articulos', methods=['GET','POST'])
-def Articulos():
-    """Return a friendly HTTP greeting."""
-    
-    if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('articulos.html').render(), 'Articulos', 'Consulte los materiales almaceados en la base de datos')
-    nombre = request.form['idioma']
-    return nombre 
-
 @app.route('/Resultadoliar', methods=['GET','POST'])
-def Resultadoliar():
+def resultados():
     """Return a friendly HTTP greeting."""
     
     if request.method == 'GET':
         return rendering_template(JINJA_ENVIRONMENT.get_template('resultadoliar.html').render(), 'Consulta', 'Elementos encontrados')
     nombre = request.form['idioma']
-    return nombre     
+    return nombre
+
+@app.route('/nuevoRegistro', methods=['GET','POST'])
+def nuevo_registro():
+    """Return a friendly HTTP greeting."""
+    
+    #Comprobar que el acceso se realiza desde un perfil de maestro
+    if session['kind'] == "Alumno":
+        return redirect('/')
+
+    if request.method == 'GET':
+        return rendering_template(JINJA_ENVIRONMENT.get_template('articulos.html').render(), 'Articulos', 'Consulte los materiales almaceados en la base de datos')
+    idioma = request.form['idioma']
+    fecha = request.form['fecha']
+    titulo = request.form['titulo']
+    autor = request.form['autor']
+    tipo = request.form['tipo']
+    ISSN_ISBN = request.form['isbn-issn']
+    editorial = request.form['editorial']
+    resena = request.form['resena']
+    link = request.form['link']
+    query = 'INSERT INTO biblioteca (titulo, autor, ISSNISBN, tipo, editorial, fecha, idioma, resena, link) VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s");' %(titulo, autor, ISSN_ISBN, tipo, editorial, fecha, idioma, resena, link)
+    print run_query(query)
+    return render_template('success.html') 
+
+# Clases -----------------------------------------------------------------------------
+# clase_registro(profe), clase_material(ambos), clase_habilitar(prof) pdf, ppt
+@app.route('/clase_registro', methods=['GET','POST'])
+def clase_registro():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':
+        return rendering_template(JINJA_ENVIRONMENT.get_template('material_clases.html').render(), 'Material', 'Consulte el material disponible')
+    nombre = request.form['idioma']
+    return nombre 
+
+@app.route('/clase_habilitar', methods=['GET','POST'])
+def clase_habilitar():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':
+        return rendering_template(JINJA_ENVIRONMENT.get_template('material_clases.html').render(), 'Material', 'Consulte el material disponible')
+    nombre = request.form['idioma']
+    return nombre 
 
 @app.route('/clase_material', methods=['GET','POST'])
 def clase_material():
@@ -149,8 +186,9 @@ def clase_material():
     if request.method == 'GET':
         return rendering_template(JINJA_ENVIRONMENT.get_template('material_clases.html').render(), 'Material', 'Consulte el material disponible')
     nombre = request.form['idioma']
-    return nombre 
+    return nombre
 
+# Render del pdf
 @app.route('/render_pdf', methods=['GET','POST'])
 def render_pdf():
     """Return a friendly HTTP greeting."""
@@ -158,8 +196,10 @@ def render_pdf():
     if request.method == 'GET':
         return rendering_template(JINJA_ENVIRONMENT.get_template('pdf.html').render(), 'Como resolver el cubo de rubik', '')
     nombre = request.form['idioma']
-    return nombre 
+    return nombre
 
+# Podcast ------------------------------------------------------
+# registro_podcast(prof) consula_audio(ambos) consulta_video(ambos) vista_video
 @app.route('/podcast_video', methods=['GET','POST'])
 def podcast_video():
     """Return a friendly HTTP greeting."""
@@ -178,6 +218,9 @@ def podcast_audio():
     nombre = request.form['idioma']
     return nombre 
 
+#MOOC'S ---------------------------------------------------------
+# registro_tema_mooc(prfe, admin), registro_mooc(profe, admin), consulta_mooc(usuarios consula_mooc.html), vista_mooc(evalucion mooc.html) 
+
 @app.route('/moocs', methods=['GET','POST'])
 def moocs():
     """Return a friendly HTTP greeting."""
@@ -187,7 +230,7 @@ def moocs():
     nombre = request.form['idioma']
     return nombre  
 
-# inicio de logica para foro
+# inicio de logica para foro -------------------------------------------
 
 @app.route('/foro', methods=['GET','POST'])
 def foro():

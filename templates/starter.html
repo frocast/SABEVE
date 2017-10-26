@@ -256,7 +256,7 @@ desired effect
         <div class="pull-left info">
           <p>{{ nombre }}</p>
           <!-- Status -->
-          <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+          <a href="#"><i class="fa fa-circle text-success"></i> {{ tipo }}</a>
         </div>
       </div>
 
@@ -270,7 +270,7 @@ desired effect
             </span>
         </div>
       </form>
-      <!-- /.search form -->
+      <!-- /.search form --> 
 
       <!-- Sidebar Menu -->
       <ul class="sidebar-menu" data-widget="tree">
@@ -285,8 +285,10 @@ desired effect
               </span>
             </a>
             <ul class="treeview-menu">
-              <li><a href="/libros"><i class="fa fa-book"></i> Libros</a></li>
-              <li><a href="/Articulos"><i class="fa fa-newspaper-o"></i> Artículos</a></li>
+              {%- if tipo== "Maestro" -%}
+              <li><a href="/nuevoRegistro"><i class="fa fa-newspaper-o"></i> Registro</a></li>
+              {%- endif -%}
+              <li><a href="/libros"><i class="fa fa-book"></i> Consulta</a></li>
             </ul>
           </li>
         <li class="treeview">
