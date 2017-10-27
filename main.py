@@ -121,11 +121,19 @@ def consulta():
         print session['kind']
     else:
         print session['kind']
-            
+
     if request.method == 'GET':
         return rendering_template(JINJA_ENVIRONMENT.get_template('libros.html').render(), 'Libros', 'Consulte los materiales almaceados en la base de datos')
-    nombre = request.form['nombres']
-    return render_template('libros.html')
+
+    pa_clave = request.form['pa_clave']
+    idioma = request.form['idioma'] 
+    rango = request.form['rango']
+
+    consulta = 'SELECT * FROM biblioteca WHERE titulo = "%s" OR autor = "%s" OR ISSNISBN = "%s" OR idioma = "%s" OR (fecha BETWEEN %d AND %d);' %(pa_clave, pa_clave, pa_clave, idioma, int(rango.split()[2][6:10]), int(rango.split()[2][6:]))
+    resultados = run_query(consulta)
+    print resultados
+    html_content = { 'resultados': resultados}
+    return rendering_template(JINJA_ENVIRONMENT.get_template('resultadoliar.html').render(html_content), 'Resultados')
 
 @app.route('/Resultadoliar', methods=['GET','POST'])
 def resultados():
@@ -145,9 +153,9 @@ def nuevo_registro():
         return redirect('/')
 
     if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('articulos.html').render(), 'Articulos', 'Consulte los materiales almaceados en la base de datos')
+        return rendering_template(JINJA_ENVIRONMENT.get_template('articulos.html').render(), 'Articulos', 'Consulte los materiales almacenados en la base de datos')
     idioma = request.form['idioma']
-    fecha = request.form['fecha']
+    fecha = int(request.form['fecha'])
     titulo = request.form['titulo']
     autor = request.form['autor']
     tipo = request.form['tipo']
@@ -155,9 +163,11 @@ def nuevo_registro():
     editorial = request.form['editorial']
     resena = request.form['resena']
     link = request.form['link']
-    query = 'INSERT INTO biblioteca (titulo, autor, ISSNISBN, tipo, editorial, fecha, idioma, resena, link) VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s");' %(titulo, autor, ISSN_ISBN, tipo, editorial, fecha, idioma, resena, link)
+    portada = request.form['portada']
+    query = 'INSERT INTO biblioteca (titulo, autor, ISSNISBN, tipo, editorial, fecha, idioma, resena, link, portada) VALUES ("%s", "%s", "%s", "%s", "%s", "%d", "%s", "%s", "%s", "%s");' %(titulo, autor, ISSN_ISBN, tipo, editorial, fecha, idioma, resena, link, portada)
     print run_query(query)
-    return render_template('success.html') 
+    html_content = { 'ruta': 'nuevoRegistro', 'd_ruta':'Nuevo Registro'}
+    return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), 'Consulta', 'Elementos encontrados') 
 
 # Clases -----------------------------------------------------------------------------
 # clase_registro(profe), clase_material(ambos), clase_habilitar(prof) pdf, ppt
@@ -190,13 +200,15 @@ def clase_material():
 
 # Render del pdf
 @app.route('/render_pdf', methods=['GET','POST'])
-def render_pdf():
+def pdf_render():
     """Return a friendly HTTP greeting."""
-    
+    link = "link"
     if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('pdf.html').render(), 'Como resolver el cubo de rubik', '')
+        link = request.args['link']
+        titulo = request.args['titulo']
+        return rendering_template(JINJA_ENVIRONMENT.get_template('pdf.html').render({ 'link':link }), titulo, " ")
     nombre = request.form['idioma']
-    return nombre
+    return link
 
 # Podcast ------------------------------------------------------
 # registro_podcast(prof) consula_audio(ambos) consulta_video(ambos) vista_video
@@ -265,7 +277,8 @@ def foro_nuevo():
     fecha = time.strftime("%x")
     if run_query('INSERT INTO foro (autor, titulo, mensaje, fecha) VALUES ("%s", "%s", "%s", NOW());' %(session['email'], tema, mensaje)):
         return rendering_template(JINJA_ENVIRONMENT.get_template('form_nu_foro.html').render(), "Foros de discusion", 'Resulva cualquier duda')
-    return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(), "Foros de discusion", 'Tema creado exitosamente')
+    html_content = { 'ruta': 'foro', 'd_ruta':'Foro'}
+    return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), "Foros de discusion", 'Tema creado exitosamente')
 
 @app.route('/foro/mensajes:<tema_id><user>', methods=['GET','POST'])
 def foro_contenido(tema_id, user):
