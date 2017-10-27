@@ -1,23 +1,57 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.3
+-- version 4.7.0
 -- https://www.phpmyadmin.net/
 --
--- Servidor: localhost:8889
--- Tiempo de generación: 23-10-2017 a las 05:43:21
--- Versión del servidor: 5.6.35
--- Versión de PHP: 7.1.8
+-- Host: localhost:3306
+-- Generation Time: Oct 27, 2017 at 03:12 AM
+-- Server version: 5.6.34-log
+-- PHP Version: 7.1.5
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
 --
--- Base de datos: `aula_virtual`
+-- Database: `aula_virtual`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `foro`
+-- Table structure for table `biblioteca`
+--
+
+CREATE TABLE `biblioteca` (
+  `titulo` varchar(100) NOT NULL,
+  `autor` varchar(50) NOT NULL,
+  `ISSNISBN` varchar(20) NOT NULL,
+  `tipo` varchar(10) NOT NULL,
+  `editorial` varchar(50) NOT NULL,
+  `fecha` int(50) NOT NULL,
+  `idioma` varchar(20) NOT NULL,
+  `resena` varchar(5000) NOT NULL,
+  `link` varchar(500) NOT NULL,
+  `portada` varchar(500) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `biblioteca`
+--
+
+INSERT INTO `biblioteca` (`titulo`, `autor`, `ISSNISBN`, `tipo`, `editorial`, `fecha`, `idioma`, `resena`, `link`, `portada`) VALUES
+('El psicoanalista', 'Jonh Katzenbach', '9786074802139', 'Libro', 'zeta limitada', 2011, 'Espanol', 'Asi comienza el anonimo que recibe Frederick Starks, psicoanalista con una larga experiencia y una vida tranquila. Starks tendra que emplear toda su astucia y rapidez', 'http://www.clubdelphos.org/sites/default/files/El_Psicoanalista-John_Katzenbach.pdf', 'http://www.quelibroleo.com/images/libros/libro_1333101559.jpg');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `foro`
 --
 
 CREATE TABLE `foro` (
@@ -29,17 +63,19 @@ CREATE TABLE `foro` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Volcado de datos para la tabla `foro`
+-- Dumping data for table `foro`
 --
 
 INSERT INTO `foro` (`id_tema`, `autor`, `titulo`, `mensaje`, `fecha`) VALUES
-(1, 'fra.castilloa@outlook.com', 'Creacion de foro ', 'Como crear un foro usando Python', '2017-10-17 22:40:47'),
-(2, 'sandra_gcb12@hotmail.com', 'Codigo ASCII', 'Como permitir que python interprete caracteres especiales', '2017-10-17 23:19:03');
+(1, 'diego@diego.com', 'Sandra', 'Chillona', '2017-10-23 19:24:25'),
+(2, 'diego@diego.com', 'chillona', 'sandra', '2017-10-23 19:25:08'),
+(3, 'diego@diego.com', 'Tema ', 'Mensaje', '2017-10-26 18:22:49'),
+(4, 'diego@diego.com', 'tema', ' nuevo', '2017-10-26 18:24:21');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `mensajes`
+-- Table structure for table `mensajes`
 --
 
 CREATE TABLE `mensajes` (
@@ -50,7 +86,7 @@ CREATE TABLE `mensajes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Volcado de datos para la tabla `mensajes`
+-- Dumping data for table `mensajes`
 --
 
 INSERT INTO `mensajes` (`email`, `id_tema`, `fecha`, `mensaje`) VALUES
@@ -68,12 +104,14 @@ INSERT INTO `mensajes` (`email`, `id_tema`, `fecha`, `mensaje`) VALUES
 ('sandra_gcb12@hotmail.com', 2, '2017-10-19 00:08:02', 'nuevo mensaje '),
 ('svela@sabeve.com', 1, '2017-10-19 00:09:08', 'nuevo mensaje de svela'),
 ('svela@sabeve.com', 2, '2017-10-19 00:09:21', 'mensaje de svela'),
-('fra.castilloa@outlook.com', 1, '2017-10-19 20:42:01', 'mensaje nuevo');
+('fra.castilloa@outlook.com', 1, '2017-10-19 20:42:01', 'mensaje nuevo'),
+('fra.castilloa@outlook.com', 1, '2017-10-23 19:00:09', 'no me se explicar'),
+('diego@diego.com', 4, '2017-10-26 18:27:34', 'respuesta');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `usuarios`
+-- Table structure for table `usuarios`
 --
 
 CREATE TABLE `usuarios` (
@@ -85,36 +123,42 @@ CREATE TABLE `usuarios` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Volcado de datos para la tabla `usuarios`
+-- Dumping data for table `usuarios`
 --
 
 INSERT INTO `usuarios` (`Nombre`, `Apellido`, `email`, `knd`, `pasw`) VALUES
 ('Diego', 'Rangel Castillo', 'diego@diego.com', 'Alumno', '123'),
 ('Francisco', 'Castillo', 'fra.castilloa@outlook.com', 'Maestro', 'mov_ah,00h'),
+('fabiola', 'vela', 'fvela@hotmail.com', 'Maestro', '123'),
 ('Fabiola', 'Vela', 'sandra_gcb12@hotmail.com', 'Alumno', '123'),
 ('Fabiola Sandra', 'Vela Vazquez', 'svela@sabeve.com', 'Admin', 'sabeve');
 
 --
--- Índices para tablas volcadas
+-- Indexes for dumped tables
 --
 
 --
--- Indices de la tabla `foro`
+-- Indexes for table `foro`
 --
 ALTER TABLE `foro`
   ADD PRIMARY KEY (`id_tema`);
 
 --
--- Indices de la tabla `usuarios`
+-- Indexes for table `usuarios`
 --
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`email`);
 
 --
--- AUTO_INCREMENT de las tablas volcadas
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT de la tabla `foro`
+-- AUTO_INCREMENT for table `foro`
 --
 ALTER TABLE `foro`
+  MODIFY `id_tema` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
