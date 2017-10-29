@@ -37,7 +37,7 @@ def rendering_template(content_rendered = None, head_title = '', head_descriptio
     """ Main template rendering """
 
     template = JINJA_ENVIRONMENT.get_template(main_template)
-    html_content = { 'content':content_rendered, 'head_title':head_title, 'head_description':head_description, 'email':session['email'], 'nombre':session['nombre'], 'tipo':session['kind'] }
+    html_content = { 'content':content_rendered, 'head_title':head_title, 'head_description':head_description, 'email':session['email'], 'nombre':session['nombre'], 'tipo':session['kind'], 'fecha_na': session['fecha_na']}
     return template.render(html_content)
 
 @app.route('/', methods=['GET','POST'])
@@ -62,13 +62,14 @@ def login():
     email = request.form['email']
     pasw = request.form['pssw']
     
-    consulta = 'SELECT email, pasw, Nombre, knd FROM usuarios WHERE email = "%s";' %email
+    consulta = 'SELECT email, pasw, Nombre, knd, fecha_na FROM usuarios WHERE email = "%s";' %email
     result = run_query(consulta)
     if result:
         if result[0][0] == email and result[0][1] == pasw:
             session['email'] = email
             session['nombre'] = result[0][2]
             session['kind'] = result[0][3]
+            session['fecha_na'] = result[0][4]
     return redirect('/')
 
 @app.route('/logout', methods=['GET','POST'])
@@ -76,7 +77,8 @@ def logout():
     print len(session)
     session.pop('email',None)
     session.pop('nombre',None)
-    session.pop('kind',None)   
+    session.pop('kind',None)
+    session.pop('fecha_na',None)   
     print len(session)
     # revisar funcion pop session.pop('apellido',None)
     return redirect('/login')    
@@ -94,16 +96,21 @@ def register():
         knd = request.form['kind']
         pasw = request.form['pssw']
         paswc = request.form['psswc']
+        genero = request.form['gen']
+        fecha_na = request.form['fecha_na']
+        institucion = request.form['institucion']
         terms = request.form['terms']
+        
         # Agregar comprobación de usuario existente
-        if name and lastName and email and pasw and paswc and terms and knd:
+        if name and lastName and email and pasw and paswc and terms and knd and institucion and fecha_na and genero:
             if terms == "True":
                 if pasw == paswc:
-                    query = 'INSERT INTO usuarios (Nombre, Apellido, email, knd, pasw) VALUES ("%s", "%s", "%s", "%s", "%s");' %(name, lastName, email, knd, pasw)
+                    query = 'INSERT INTO usuarios (Nombre, Apellido, email, knd, fecha_na, institucion, genero, pasw) VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s");' %(name, lastName, email, knd, fecha_na, institucion, genero, pasw)
                     print run_query(query)
                     session['email'] = email
                     session['nombre'] = name
                     session['kind'] = knd
+                    session['fecha_na'] = fecha_na
                     return redirect('/')
                 else:
                     return render_template('/register.html', errortype=2)
@@ -117,13 +124,13 @@ def register():
 @app.route('/libros', methods=['GET','POST'])
 def consulta():
     """Return a friendly HTTP greeting."""
-    if session['kind'] == "Admin" or session['kind'] == "Maestro":
+    if session['kind'] == "Admin" or session['kind'] == "Profesor":
         print session['kind']
     else:
         print session['kind']
 
     if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('libros.html').render(), 'Libros', 'Consulte los materiales almaceados en la base de datos')
+        return rendering_template(JINJA_ENVIRONMENT.get_template('libros.html').render(), 'Material Bibliografico', 'Consulte los materiales almaceados en la base de datos')
 
     pa_clave = request.form['pa_clave']
     idioma = request.form['idioma'] 
@@ -153,7 +160,7 @@ def nuevo_registro():
         return redirect('/')
 
     if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('articulos.html').render(), 'Articulos', 'Consulte los materiales almacenados en la base de datos')
+        return rendering_template(JINJA_ENVIRONMENT.get_template('articulos.html').render(), 'Material Bibliografico', 'Registre nuevos contenidos')
     idioma = request.form['idioma']
     fecha = int(request.form['fecha'])
     titulo = request.form['titulo']
@@ -202,33 +209,66 @@ def clase_material():
 @app.route('/render_pdf', methods=['GET','POST'])
 def pdf_render():
     """Return a friendly HTTP greeting."""
-    link = "link"
     if request.method == 'GET':
         link = request.args['link']
         titulo = request.args['titulo']
         return rendering_template(JINJA_ENVIRONMENT.get_template('pdf.html').render({ 'link':link }), titulo, " ")
-    nombre = request.form['idioma']
-    return link
+    
+    return "post"
 
 # Podcast ------------------------------------------------------
 # registro_podcast(prof) consula_audio(ambos) consulta_video(ambos) vista_video
+@app.route('/registro_podcast', methods=['GET','POST'])
+def registro_podcast():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':
+        return rendering_template(JINJA_ENVIRONMENT.get_template('registro_podcast.html').render(), "Registrar  Nuevo Contenido", 'Vea a espertos hablar de un tema')
+    titulo = request.form['titulo']
+    url = request.form['url']
+    tipo = request.form['tipo']
+    descrip = request.form['descrip']
+    portada = request.form['portada']
+    run_query('INSERT INTO podcasts (titulo, descripcion, email, fecha_pu, url, portada, tipo) VALUES ("%s", "%s", "%s", NOW(), "%s", "%s", "%s");' %(titulo, descrip, session['email'], url, portada, tipo))
+    html_content = { 'ruta': 'podcast_'+tipo, 'd_ruta':'Podcast '+tipo}
+    return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), "Podcast", 'Tema creado exitosamente')
+
 @app.route('/podcast_video', methods=['GET','POST'])
 def podcast_video():
     """Return a friendly HTTP greeting."""
     
     if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('miniatura.html').render(), "Podcast en Video", 'Vea a espertos hablar de un tema')
-    nombre = request.form['idioma']
-    return nombre 
+        consulta = 'SELECT * FROM podcasts WHERE tipo = "video";'
+        resultados = run_query(consulta)
+        html_content = { 'info_video': resultados}
+        return rendering_template(JINJA_ENVIRONMENT.get_template('miniatura.html').render(html_content), "Podcast en Video", 'Ve a espertos hablar de un tema')
+    
+    return "post"
+
+@app.route('/vista_podcast', methods=['GET','POST'])
+def vista_podcast():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':
+        link = request.args['link']
+        titulo = request.args['titulo']
+
+        html_content = { 'link': link }
+        return rendering_template(JINJA_ENVIRONMENT.get_template('vista_podcast.html').render(html_content), titulo, 'Ve a espertos hablar de un tema')
+    
+    return "post"
 
 @app.route('/podcast_audio', methods=['GET','POST'])
 def podcast_audio():
     """Return a friendly HTTP greeting."""
     
     if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('podaudio.html').render(), "Podcast en Audio", 'Escuche a espertos hablar de un tema')
-    nombre = request.form['idioma']
-    return nombre 
+        
+        consulta = 'SELECT * FROM podcasts WHERE tipo = "audio";'
+        resultados = run_query(consulta)
+        html_content = { 'info_audio': resultados}
+        return rendering_template(JINJA_ENVIRONMENT.get_template('podaudio.html').render(html_content), "Podcast en Audio", 'Escuche a espertos hablar de un tema')
+    return "post"
 
 #MOOC'S ---------------------------------------------------------
 # registro_tema_mooc(prfe, admin), registro_mooc(profe, admin), consulta_mooc(usuarios consula_mooc.html), vista_mooc(evalucion mooc.html) 
@@ -241,6 +281,109 @@ def moocs():
         return rendering_template(JINJA_ENVIRONMENT.get_template('moocs.html').render(), "Mooc's", 'Aprenda de forma sencilla')
     nombre = request.form['idioma']
     return nombre  
+
+@app.route('/registro_tema_mooc', methods=['GET','POST'])
+def registro_tema_mooc():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':
+        return rendering_template(JINJA_ENVIRONMENT.get_template('registro_tema_mooc.html').render(), "Registro de Nuevo tema para MOOC", 'Aprender de forma sencilla')
+    titulo = request.form['titulo']
+    descrip = request.form['descrip']
+    
+    run_query('INSERT INTO moocs (descripcion, titulo, email) VALUES ("%s", "%s", "%s");' %(descrip, titulo, session['email']))
+    html_content = {'ruta':'moocs', 'd_ruta':'Regresar a Moocs'}
+    return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), "Registro de Nuevo tema para MOOC", 'Aprender de forma sencilla')
+
+@app.route('/registro_mooc', methods=['GET','POST'])
+def registro_mooc():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':
+        consulta = 'SELECT * FROM moocs WHERE email = "%s";' %(session['email'])
+        resultados = run_query(consulta)
+        html_content = {'resultados':resultados }
+        return rendering_template(JINJA_ENVIRONMENT.get_template('registro_mooc.html').render(html_content), "Registro de Nuevo tema para MOOC", 'Aprender de forma sencilla')
+
+    id_mooc = request.form['id_mooc']
+    titulo_video = request.form['titulo_video']
+    link = request.form['link']
+    
+    pregunta = request.form['pregunta']
+    r1 = request.form['r1']
+    r2 = request.form['r2']
+    r3 = request.form['r3']
+    
+    run_query('INSERT INTO contenido_mooc (id_mooc, titulo, url, email) VALUES ("%s", "%s", "%s", "%s");' %(id_mooc, titulo_video, link, session['email']))
+    run_query('INSERT INTO evaluaciones (id_mooc, pregunta, respuesta_1, respuesta_2, respuesta_3) VALUES ("%s", "%s", "%s", "%s", "%s");' %(id_mooc, pregunta, r1, r2, r3))
+
+    html_content = {'ruta':'consulta_tema_mooc', 'd_ruta':'Regresar a Moocs'}
+    return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), "Registro de Nuevo tema para MOOC", 'Aprender de forma sencilla')
+
+@app.route('/consulta_tema_mooc', methods=['GET','POST'])
+def consulta_tema_mooc():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':
+        consulta = 'SELECT * FROM moocs WHERE email = "%s";' %(session['email']) # CAMBIAR POR ID DEL GRUPO
+        resultados = run_query(consulta)     
+        html_content = {'info_mooc':resultados }
+        return rendering_template(JINJA_ENVIRONMENT.get_template('consulta_tema_mooc.html').render(html_content), "Temas de MOOC", 'Aprender de forma sencilla')
+
+    return "post"
+
+@app.route('/consulta_mooc', methods=['GET','POST'])
+def consulta_mooc():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':
+        id_mooc = request.args['id']
+        titulo = request.args['t']
+        descrip = request.args['d']
+        email = request.args['a']
+        
+        consulta = 'SELECT * FROM contenido_mooc WHERE id_mooc = "%s";' %(id_mooc) # CAMBIAR POR ID DEL GRUPO
+        resultados = run_query(consulta)     
+        html_content = {'info_contenido':resultados }
+        return rendering_template(JINJA_ENVIRONMENT.get_template('consulta_mooc.html').render(html_content), "Temas de MOOC", 'Aprender de forma sencilla')
+
+    return "post"
+
+@app.route('/vista_mooc', methods=['GET','POST'])
+def vista_mooc():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':
+        id_mooc = request.args['id']
+        titulo = request.args['t']
+        url = request.args['u']
+        email = request.args['a']
+        #consulta = 'SELECT * FROM contenido_mooc WHERE id_mooc = "%s";' %(id_mooc)
+        #resultados = run_query(consulta)
+        html_content = {'id':id_mooc, 't':titulo, 'u':url, 'a':email }
+        return rendering_template(JINJA_ENVIRONMENT.get_template('moocs.html').render(html_content), titulo, 'Aprender de forma sencilla')
+
+    return "post"
+
+@app.route('/evaluacion', methods=['GET','POST'])
+def evaluacion():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':
+        id_mooc = request.args['id']
+        #titulo = request.args['t']
+        #url = request.args['u']
+        #email = request.args['a']
+        consulta = 'SELECT * FROM evaluaciones WHERE id_mooc = "%s";' %(id_mooc)
+        resultados = run_query(consulta)
+        html_content = {'info_evaluacion':resultados }        
+        return rendering_template(JINJA_ENVIRONMENT.get_template('evaluacion.html').render(html_content), "Evaluacion", 'Aprender de forma sencilla')
+    respuesta = request.form['respuesta']
+    id_mooc = request.form['id']
+    query = 'INSERT INTO resultados (email, id_mooc, calificacion) VALUES ("%s", "%s", "%s");' %(session['email'],id_mooc, respuesta)
+    run_query(query)
+    html_content = {'ruta':'consulta_tema_mooc', 'd_ruta':'Regresar a Mooc'}
+    return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), "Evaluacion Exitosa", 'Aprender de forma sencilla')
 
 # inicio de logica para foro -------------------------------------------
 
@@ -280,17 +423,18 @@ def foro_nuevo():
     html_content = { 'ruta': 'foro', 'd_ruta':'Foro'}
     return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), "Foros de discusion", 'Tema creado exitosamente')
 
-@app.route('/foro/mensajes:<tema_id><user>', methods=['GET','POST'])
-def foro_contenido(tema_id, user):
+@app.route('/foro/mensajes', methods=['GET','POST'])
+def foro_contenido():
     """Return a friendly HTTP greeting."""
     
     if request.method == 'GET':
+        tema_id = request.args['id_tema']        
         info_tema = run_query('SELECT * FROM foro WHERE id_tema = "%s";' %tema_id)
         info_mensajes = run_query('SELECT * FROM mensajes WHERE id_tema = "%s";' %tema_id)
         if info_tema:            
-            return rendering_template(JINJA_ENVIRONMENT.get_template('mensajes_foro.html').render({'info_tema':info_tema,'info_mensajes':info_mensajes}), " ", " ")
+            return rendering_template(JINJA_ENVIRONMENT.get_template('mensajes_foro.html').render({'info_tema':info_tema,'info_mensajes':info_mensajes}), info_tema[0][2], info_tema[0][3])
         else:            
-            return rendering_template(JINJA_ENVIRONMENT.get_template('mensajes_foro.html').render(), "", "")    
+            return rendering_template(JINJA_ENVIRONMENT.get_template('mensajes_foro.html').render(), "Sin Temas", "Por favor Cree un tema")    
     return "metodo post" 
 
 @app.route('/foro/messagesave', methods=['POST'])
@@ -303,7 +447,7 @@ def messasgesave():
         mensaje = request.form['mensaje']
         print mensaje
         run_query('INSERT INTO mensajes (email, id_tema, fecha, mensaje) VALUES ("%s", "%s", NOW(), "%s");' %(session['email'], id_tema, mensaje))
-        url = '/foro/mensajes:%s%s' %(id_tema, session['email'])
+        url = '/foro/mensajes?id_tema=%s' %(id_tema)
         return redirect(url) 
     return "metodo post" 
 
