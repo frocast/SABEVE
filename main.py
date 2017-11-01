@@ -240,7 +240,7 @@ def podcast_video():
     if request.method == 'GET':
         consulta = 'SELECT * FROM podcasts WHERE tipo = "video";'
         resultados = run_query(consulta)
-        html_content = { 'info_video': resultados}
+        html_content = { 'info_video': resultados} #podvideo.html
         return rendering_template(JINJA_ENVIRONMENT.get_template('miniatura.html').render(html_content), "Podcast en Video", 'Ve a espertos hablar de un tema')
     
     return "post"
