@@ -24,14 +24,18 @@ import socket
 import os
 
 from flask import Flask, render_template, request, redirect, session
+#from flask_talisman import Talisman
+#from flask_seasurf import SeaSurf
 from flask_sqlalchemy import SQLAlchemy
 import sqlalchemy
 import jinja2
 
-from dbconnect import connection, run_query           
+#from dbconnect import connection, run_query           
 
 app = Flask(__name__)
 app.secret_key='Clave_secreta'
+#csrf = SeaSurf(app)
+#talisman = Talisman(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -185,7 +189,7 @@ def consulta():
     rango = request.form['rango']
 
     consulta = 'SELECT * FROM biblioteca WHERE titulo = "%s" OR autor = "%s" OR ISSNISBN = "%s" OR idioma = "%s" OR (fecha BETWEEN %d AND %d);' %(pa_clave, pa_clave, pa_clave, idioma, int(rango.split()[2][6:10]), int(rango.split()[2][6:]))
-    resultados = run_query(consulta)
+    resultados = [] #run_query(consulta)
     print resultados
     html_content = { 'resultados': resultados}
     return rendering_template(JINJA_ENVIRONMENT.get_template('resultadoliar.html').render(html_content), 'Resultados')
@@ -220,7 +224,7 @@ def nuevo_registro():
     link = request.form['link']
     portada = request.form['portada']
     query = 'INSERT INTO biblioteca (titulo, autor, ISSNISBN, tipo, editorial, fecha, idioma, resena, link, portada) VALUES ("%s", "%s", "%s", "%s", "%s", "%d", "%s", "%s", "%s", "%s");' %(titulo, autor, ISSN_ISBN, tipo, editorial, fecha, idioma, resena, link, portada)
-    print run_query(query)
+    #run_query(query)
     html_content = { 'ruta': 'nuevoRegistro', 'd_ruta':'Nuevo Registro'}
     return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), 'Consulta', 'Elementos encontrados') 
 
@@ -277,7 +281,7 @@ def registro_podcast():
     tipo = request.form['tipo']
     descrip = request.form['descrip']
     portada = request.form['portada']
-    run_query('INSERT INTO podcasts (titulo, descripcion, email, fecha_pu, url, portada, tipo) VALUES ("%s", "%s", "%s", NOW(), "%s", "%s", "%s");' %(titulo, descrip, session['email'], url, portada, tipo))
+    #run_query('INSERT INTO podcasts (titulo, descripcion, email, fecha_pu, url, portada, tipo) VALUES ("%s", "%s", "%s", NOW(), "%s", "%s", "%s");' %(titulo, descrip, session['email'], url, portada, tipo))
     html_content = { 'ruta': 'podcast_'+tipo, 'd_ruta':'Podcast '+tipo}
     return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), "Podcast", 'Tema creado exitosamente')
 
@@ -287,7 +291,7 @@ def podcast_video():
     
     if request.method == 'GET':
         consulta = 'SELECT * FROM podcasts WHERE tipo = "video";'
-        resultados = run_query(consulta)
+        resultados = [] #run_query(consulta)
         html_content = { 'info_video': resultados} #podvideo.html
         return rendering_template(JINJA_ENVIRONMENT.get_template('miniatura.html').render(html_content), "Podcast en Video", 'Ve a espertos hablar de un tema')
     
@@ -313,7 +317,7 @@ def podcast_audio():
     if request.method == 'GET':
         
         consulta = 'SELECT * FROM podcasts WHERE tipo = "audio";'
-        resultados = run_query(consulta)
+        resultados = [] #run_query(consulta)
         html_content = { 'info_audio': resultados}
         return rendering_template(JINJA_ENVIRONMENT.get_template('podaudio.html').render(html_content), "Podcast en Audio", 'Escuche a espertos hablar de un tema')
     return "post"
@@ -339,7 +343,7 @@ def registro_tema_mooc():
     titulo = request.form['titulo']
     descrip = request.form['descrip']
     
-    run_query('INSERT INTO moocs (descripcion, titulo, email) VALUES ("%s", "%s", "%s");' %(descrip, titulo, session['email']))
+    #run_query('INSERT INTO moocs (descripcion, titulo, email) VALUES ("%s", "%s", "%s");' %(descrip, titulo, session['email']))
     html_content = {'ruta':'moocs', 'd_ruta':'Regresar a Moocs'}
     return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), "Registro de Nuevo tema para MOOC", 'Aprender de forma sencilla')
 
@@ -349,7 +353,7 @@ def registro_mooc():
     
     if request.method == 'GET':
         consulta = 'SELECT * FROM moocs WHERE email = "%s";' %(session['email'])
-        resultados = run_query(consulta)
+        resultados = [] #run_query(consulta)
         html_content = {'resultados':resultados }
         return rendering_template(JINJA_ENVIRONMENT.get_template('registro_mooc.html').render(html_content), "Registro de Nuevo tema para MOOC", 'Aprender de forma sencilla')
 
@@ -362,8 +366,8 @@ def registro_mooc():
     r2 = request.form['r2']
     r3 = request.form['r3']
     
-    run_query('INSERT INTO contenido_mooc (id_mooc, titulo, url, email) VALUES ("%s", "%s", "%s", "%s");' %(id_mooc, titulo_video, link, session['email']))
-    run_query('INSERT INTO evaluaciones (id_mooc, pregunta, respuesta_1, respuesta_2, respuesta_3) VALUES ("%s", "%s", "%s", "%s", "%s");' %(id_mooc, pregunta, r1, r2, r3))
+    #run_query('INSERT INTO contenido_mooc (id_mooc, titulo, url, email) VALUES ("%s", "%s", "%s", "%s");' %(id_mooc, titulo_video, link, session['email']))
+    #run_query('INSERT INTO evaluaciones (id_mooc, pregunta, respuesta_1, respuesta_2, respuesta_3) VALUES ("%s", "%s", "%s", "%s", "%s");' %(id_mooc, pregunta, r1, r2, r3))
 
     html_content = {'ruta':'consulta_tema_mooc', 'd_ruta':'Regresar a Moocs'}
     return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), "Registro de Nuevo tema para MOOC", 'Aprender de forma sencilla')
@@ -374,7 +378,7 @@ def consulta_tema_mooc():
     
     if request.method == 'GET':
         consulta = 'SELECT * FROM moocs WHERE email = "%s";' %(session['email']) # CAMBIAR POR ID DEL GRUPO
-        resultados = run_query(consulta)     
+        resultados = [] #run_query(consulta)     
         html_content = {'info_mooc':resultados }
         return rendering_template(JINJA_ENVIRONMENT.get_template('consulta_tema_mooc.html').render(html_content), "Temas de MOOC", 'Aprender de forma sencilla')
 
@@ -391,7 +395,7 @@ def consulta_mooc():
         email = request.args['a']
         
         consulta = 'SELECT * FROM contenido_mooc WHERE id_mooc = "%s";' %(id_mooc) # CAMBIAR POR ID DEL GRUPO
-        resultados = run_query(consulta)     
+        resultados = [] #run_query(consulta)     
         html_content = {'info_contenido':resultados }
         return rendering_template(JINJA_ENVIRONMENT.get_template('consulta_mooc.html').render(html_content), "Temas de MOOC", 'Aprender de forma sencilla')
 
@@ -423,13 +427,13 @@ def evaluacion():
         #url = request.args['u']
         #email = request.args['a']
         consulta = 'SELECT * FROM evaluaciones WHERE id_mooc = "%s";' %(id_mooc)
-        resultados = run_query(consulta)
+        resultados = [] #run_query(consulta)
         html_content = {'info_evaluacion':resultados }        
         return rendering_template(JINJA_ENVIRONMENT.get_template('evaluacion.html').render(html_content), "Evaluacion", 'Aprender de forma sencilla')
     respuesta = request.form['respuesta']
     id_mooc = request.form['id']
     query = 'INSERT INTO resultados (email, id_mooc, calificacion) VALUES ("%s", "%s", "%s");' %(session['email'],id_mooc, respuesta)
-    run_query(query)
+    #run_query(query)
     html_content = {'ruta':'consulta_tema_mooc', 'd_ruta':'Regresar a Mooc'}
     return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), "Evaluacion Exitosa", 'Aprender de forma sencilla')
 
@@ -442,7 +446,7 @@ def foro():
     if request.method == 'GET':
         # PARA MODIFICAR EL TEMA consulta = 'SELECT * FROM foro WHERE autor = "%s";' %session['email']
         consulta = 'SELECT * FROM foro;'
-        resultados = run_query(consulta)
+        resultados = [] #run_query(consulta)
         if resultados:
             template = JINJA_ENVIRONMENT.get_template('foro_temas.html')
             html_content = { 'resultado':resultados}
@@ -466,7 +470,7 @@ def foro_nuevo():
     tema = request.form['subject']
     mensaje = request.form['message']
     fecha = time.strftime("%x")
-    if run_query('INSERT INTO foro (autor, titulo, mensaje, fecha) VALUES ("%s", "%s", "%s", NOW());' %(session['email'], tema, mensaje)):
+    if True: #run_query('INSERT INTO foro (autor, titulo, mensaje, fecha) VALUES ("%s", "%s", "%s", NOW());' %(session['email'], tema, mensaje)):
         return rendering_template(JINJA_ENVIRONMENT.get_template('form_nu_foro.html').render(), "Foros de discusion", 'Resulva cualquier duda')
     html_content = { 'ruta': 'foro', 'd_ruta':'Foro'}
     return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), "Foros de discusion", 'Tema creado exitosamente')
@@ -477,8 +481,8 @@ def foro_contenido():
     
     if request.method == 'GET':
         tema_id = request.args['id_tema']        
-        info_tema = run_query('SELECT * FROM foro WHERE id_tema = "%s";' %tema_id)
-        info_mensajes = run_query('SELECT * FROM mensajes WHERE id_tema = "%s";' %tema_id)
+        info_tema = [] #run_query('SELECT * FROM foro WHERE id_tema = "%s";' %tema_id)
+        info_mensajes = [] #run_query('SELECT * FROM mensajes WHERE id_tema = "%s";' %tema_id)
         if info_tema:            
             return rendering_template(JINJA_ENVIRONMENT.get_template('mensajes_foro.html').render({'info_tema':info_tema,'info_mensajes':info_mensajes}), info_tema[0][2], info_tema[0][3])
         else:            
@@ -494,7 +498,7 @@ def messasgesave():
         print id_tema
         mensaje = request.form['mensaje']
         print mensaje
-        run_query('INSERT INTO mensajes (email, id_tema, fecha, mensaje) VALUES ("%s", "%s", NOW(), "%s");' %(session['email'], id_tema, mensaje))
+        #run_query('INSERT INTO mensajes (email, id_tema, fecha, mensaje) VALUES ("%s", "%s", NOW(), "%s");' %(session['email'], id_tema, mensaje))
         url = '/foro/mensajes?id_tema=%s' %(id_tema)
         return redirect(url) 
     return "metodo post" 
@@ -505,7 +509,7 @@ def foro_modificar():
         
     if request.method == 'GET':
         consulta = 'SELECT * FROM foro WHERE autor = "%s";' %session['email']
-        resultados = run_query(consulta)
+        resultados = [] #run_query(consulta)
         if resultados:
             template = JINJA_ENVIRONMENT.get_template('foro_temas.html')
             html_content = { 'resultado':resultados}
@@ -554,7 +558,7 @@ def inicioBiblioteca():
         #query = 'INSERT INTO cuerpo (ojo, boca) VALUES ("%s", "%s")' %(ojo, boca)
         #query = 'UPDATE cuerpo SET boca = "de Sandra" WHERE ojo = "azul" '
         query = 'SELECT Autor FROM Libros WHERE ISSN = "2530-1039" '
-        print run_query(query)
+        #run_query(query)
         return("Operacion exitosa")
     except Exception as e:
         return(str(e))
