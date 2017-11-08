@@ -23,9 +23,9 @@ import datetime
 import socket
 import os
 
-from flask import Flask, render_template, request, redirect, session
-#from flask_talisman import Talisman
-#from flask_seasurf import SeaSurf
+from flask import Flask, render_template, request, redirect, session, url_for
+from flask_talisman import Talisman
+# from flask_seasurf import SeaSurf
 from flask_sqlalchemy import SQLAlchemy
 import sqlalchemy
 import jinja2
@@ -34,8 +34,8 @@ import jinja2
 
 app = Flask(__name__)
 app.secret_key='Clave_secreta'
-#csrf = SeaSurf(app)
-#talisman = Talisman(app)
+# csrf = SeaSurf(app)
+Talisman(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
