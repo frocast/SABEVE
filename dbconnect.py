@@ -1,9 +1,11 @@
 #_# coding:utf-8 #_#
+from flask_sqlalchemy import SQLAlchemy
+import sqlalchemy
 import MySQLdb
 
-def connection(host = "localhost", 
+def connection(host = "2001:4860:4864:1:53f2:a8e3:2b0e:801e", 
                user = "root", 
-               passwd = "root", 
+               passwd = "p3nt35t1ng", 
                db = "aula_virtual"):                 # Valores por defecto para la conexion
 
     try:                                                     

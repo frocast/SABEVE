@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,14 +19,22 @@
 # [START app]
 """ Comentario"""
 import logging
-
-import jinja2, os, time
+import datetime
+import socket
+import os
 
 from flask import Flask, render_template, request, redirect, session
+from flask_sqlalchemy import SQLAlchemy
+import sqlalchemy
+import jinja2
+
 from dbconnect import connection, run_query           
 
 app = Flask(__name__)
 app.secret_key='Clave_secreta'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 print template_dir
@@ -32,6 +42,28 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     loader = jinja2.FileSystemLoader(template_dir),
     autoescape=False
 )
+
+db = SQLAlchemy(app)
+
+class Usuarios(db.Model):
+    Nombre = db.Column(db.String(30))
+    Apellido = db.Column(db.String(30))
+    email = db.Column(db.String(30), primary_key=True)
+    knd = db.Column(db.String(20))
+    fecha_na = db.Column(db.String(15))
+    institucion = db.Column(db.String(200))
+    genero = db.Column(db.String(10))
+    pasw = db.Column(db.String(20))       
+
+    def __init__(self, nombre="", apellido="", email="", knd="", fecha_na="", institucion="", genero="", pasw=""):
+        self.Nombre = nombre
+        self.Apellido = apellido   
+        self.email = email   
+        self.knd = knd   
+        self.fecha_na = fecha_na
+        self.institucion = institucion   
+        self.genero = genero  
+        self.pasw = pasw
 
 def rendering_template(content_rendered = None, head_title = '', head_description = '', main_template = 'starter.html'):
     """ Main template rendering """
@@ -61,15 +93,26 @@ def login():
 
     email = request.form['email']
     pasw = request.form['pssw']
+
+    usuarios = Usuarios()
+    actuales = Usuarios.query.filter_by(email=email).all()
     
-    consulta = 'SELECT email, pasw, Nombre, knd, fecha_na FROM usuarios WHERE email = "%s";' %email
-    result = run_query(consulta)
-    if result:
-        if result[0][0] == email and result[0][1] == pasw:
-            session['email'] = email
-            session['nombre'] = result[0][2]
-            session['kind'] = result[0][3]
-            session['fecha_na'] = result[0][4]
+    #consulta = 'SELECT email, pasw, Nombre, knd, fecha_na FROM usuarios WHERE email = "%s";' %email
+    #result = run_query(consulta)    
+        # if result[0][0] == email and result[0][1] == pasw:
+        #     session['email'] = email
+        #     session['nombre'] = result[0][2]
+        #     session['kind'] = result[0][3]
+        #     session['fecha_na'] = result[0][4]
+    try:
+        for usuario in actuales:
+            if usuario.email == email and usuario.pasw == pasw:
+                session['email'] = usuario.email
+                session['nombre'] = usuario.Nombre
+                session['kind'] = usuario.knd
+                session['fecha_na'] = usuario.fecha_na
+    except: 
+        return "Error en el Servidor"
     return redirect('/')
 
 @app.route('/logout', methods=['GET','POST'])
@@ -100,13 +143,18 @@ def register():
         fecha_na = request.form['fecha_na']
         institucion = request.form['institucion']
         terms = request.form['terms']
+
+        
         
         # Agregar comprobación de usuario existente
         if name and lastName and email and pasw and paswc and terms and knd and institucion and fecha_na and genero:
             if terms == "True":
                 if pasw == paswc:
-                    query = 'INSERT INTO usuarios (Nombre, Apellido, email, knd, fecha_na, institucion, genero, pasw) VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s");' %(name, lastName, email, knd, fecha_na, institucion, genero, pasw)
-                    print run_query(query)
+                    usuario = Usuarios(name, lastName, email, knd, fecha_na, institucion, genero, pasw)
+                    db.session.add(usuario)
+                    db.session.commit()
+                    #query = 'INSERT INTO usuarios (Nombre, Apellido, email, knd, fecha_na, institucion, genero, pasw) VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s");' %(name, lastName, email, knd, fecha_na, institucion, genero, pasw)
+                    #print run_query(query)
                     session['email'] = email
                     session['nombre'] = name
                     session['kind'] = knd
