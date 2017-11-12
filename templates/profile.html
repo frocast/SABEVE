@@ -1,3 +1,4 @@
+  {%- for dato in usuario -%}
   <!-- Main content -->
   <section class="content">
 
@@ -9,9 +10,9 @@
           <div class="box-body box-profile">
             <img class="profile-user-img img-responsive img-circle" src="../static/dist/img/user_esime.jpg" alt="User profile picture">
 
-            <h3 class="profile-username text-center">Fabiola Vela</h3>
+            <h3 class="profile-username text-center">{{ dato.Nombre }}</h3>
 
-            <p class="text-muted text-center">Estudiante</p>
+            <p class="text-muted text-center">{{ dato.knd }}</p>
 
             <ul class="list-group list-group-unbordered">
               <li class="list-group-item">
@@ -25,7 +26,7 @@
               </li>
             </ul>
 
-            <a href="#" class="btn bg-purple btn-block"><b>Perfil</b></a>
+            <a href="#" class="btn bg-red btn-block"><b>Perfil</b></a>
           </div>
           <!-- /.box-body -->
         </div>
@@ -38,10 +39,10 @@
           </div>
           <!-- /.box-header -->
           <div class="box-body">
-            <strong><i class="fa fa-book margin-r-5"></i> Estudios</strong>
+            <strong><i class="fa fa-book margin-r-5"></i> Institucion</strong>
 
             <p class="text-muted">
-              Estudiane de maestria en telecomunicaciones
+              {{ dato.institucion }}
             </p>
 
             <hr>
@@ -77,71 +78,11 @@
         <div class="nav-tabs-custom">
           <ul class="nav nav-tabs">
             <!-- <li class="active"><a href="#activity" data-toggle="tab">Actividad</a></li> -->
-            <li class="active"><a href="#timeline" data-toggle="tab">Historial</a></li>
-            <li><a href="#settings" data-toggle="tab">Configuración</a></li>
+            <!-- <li ><a href="#timeline" data-toggle="tab">Historial</a></li> -->
+            <li class="active"><a href="#settings" data-toggle="tab">Configuración</a></li>
           </ul>
           <div class="tab-content">
-            <!-- /.tab-pane -->
-            <div class="tab-pane active" id="timeline">
-              <!-- The timeline -->
-              <ul class="timeline timeline-inverse">
-                <!-- timeline time label -->
-                <li class="time-label">
-                      <span class="bg-red">
-                        10 Jun. 2017
-                      </span>
-                </li>
-                <!-- /.timeline-label -->
-                <!-- timeline item -->
-                <li>
-                  <i class="fa fa-envelope bg-blue"></i>
-
-                  <div class="timeline-item">
-                    <span class="time"><i class="fa fa-clock-o"></i> 12:05</span>
-
-                    <h3 class="timeline-header"><a href="#">El Dr. Ballesteros </a> Te envio un correo</h3>
-
-                    <div class="timeline-body">
-                      Reunión el día lunes para revisión de avances en la plataforma.
-                    </div>
-                    <div class="timeline-footer">
-                      <a class="btn btn-primary btn-xs">Revisar</a>
-                      <a class="btn btn-danger btn-xs">Eliminar</a>
-                    </div>
-                  </div>
-                </li>
-                <!-- END timeline item -->
-                <!-- timeline item -->
-                <li>
-                  <i class="fa fa-user bg-aqua"></i>
-
-                  <div class="timeline-item">
-                    <span class="time"><i class="fa fa-clock-o"></i> hace 5 minutos</span>
-
-                    <h3 class="timeline-header no-border"><a href="#">José Rodrigo</a> Se unio al Grupo.
-                    </h3>
-                  </div>
-                </li>
-                <!-- END timeline item -->
-                <!-- timeline item -->
-                <!-- END timeline item -->
-                <!-- timeline time label -->
-                <li class="time-label">
-                      <span class="bg-green">
-                        5 Jun. 2017 
-                      </span>
-                </li>
-                <!-- /.timeline-label -->
-                <!-- timeline item -->
-                <!-- END timeline item -->
-                <li>
-                  <i class="fa fa-clock-o bg-gray"></i>
-                </li>
-              </ul>
-            </div>
-            <!-- /.tab-pane -->
-
-            <div class="tab-pane" id="settings">
+            <div class="tab-pane active" id="settings">
               <form class="form-horizontal">
                 <div class="form-group">
                   <label for="inputName" class="col-sm-2 control-label">Nombre</label>
@@ -205,3 +146,4 @@
     <!-- /.row -->
 
   </section>
+  {%- endfor -%}

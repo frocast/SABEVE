@@ -3,29 +3,28 @@
     <div class="col-md-10">
 {%- for item in info_evaluacion -%}
 <div class="form-group">
-    <h1>{{ item[1] }}</h1>
+    <h1>{{ item.pregunta }}</h1>
     <br>
     <form action="/evaluacion" method="post">
     <div class="radio">
                 <label>
                   <input type="radio" name="respuesta" value="True" class="flat-red" checked>
-                  {{ item[2] }}
+                  {{ item.respuesta_1 }}
                 </label>
             </div>
             <div class="radio">
                 <label>
                   <input type="radio" name="respuesta" value="False" class="flat-red">
-                  {{ item[3] }}
+                  {{ item.respuesta_2 }}
                 </label>
             </div>
             <div class="radio">
                 <label>
                   <input type="radio" name="respuesta" value="False" class="flat-red">
-                  {{ item[4] }}
+                  {{ item.respuesta_3 }}
                 </label>
             </div>
-
-            <input type="hidden" name="id" value="{{ item[0] }}" class="flat-red">
+            <input type="hidden" name="id" value="{{ item.id_mooc }}" class="flat-red">
         <div class="box-footer text-right">
                 <button type="submit" class="btn btn-flat bg-red">Enviar</button>
               </div>

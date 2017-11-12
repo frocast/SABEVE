@@ -1,18 +1,18 @@
 <div class="row">
     
-  {%- for item in info_audio -%}
+  {%- for audio in info_audio -%}
     <div class="col-md-4">
         <div class="thumbnail">
             <br>  
-            <img alt="Generic placeholder thumbnail" src="{{ item[6] }}">
+            <img alt="Generic placeholder thumbnail" src="{{ audio.portada }}">
           <br>    
-            <audio class="form-control" src="{{ item[5] }}" controls loop>
+            <audio class="form-control" src="{{ audio.url }}" controls loop>
                 <p>Tu navegador no implementa el elemento audio</p>
             </audio>
             <div class="caption">
-              <h3>{{ item[1] }}</h3>
-              <p>{{item[2]}}</p>
-              <p>{{item[4]}}</p>
+              <h3>{{ audio.titulo }}</h3>
+              <p>{{audio.descip}}</p>
+              <p>{{audio.fecha_pu}}</p>
             </div>
         </div>
         </div>

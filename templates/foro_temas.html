@@ -18,18 +18,18 @@
       <div class="box box-solid">
         <div class="box-header with-border">
           <i class="fa fa-share"></i>                              
-          <h3 class="box-title"><a href="/foro/mensajes?id_tema={{ item[0] }}">{{ item[2] }}</a></h3>  
+          <h3 class="box-title"><a href="/foro/mensajes?id_tema={{ item.id_tema }}">{{ item.titulo }}</a></h3>  
         </div>
         <div class="box-header with-border">                    
-          <h5 class="text-muted">Fecha de publicación: {{ item[4] }}</h5>
+          <h5 class="text-muted">Fecha de publicación: {{ item.fecha }}</h5>
         </div>
         <!-- /.box-header -->
         <div class="box-body">
           <dl class="dl-horizontal">                                
             <dt>Descripción</dt>
-            <dd>{{item[3]}}</dd>
+            <dd>{{item.mensaje}}</dd>
             <dt>Publicado por</dt>
-            <dd>{{ item[1] }}</dd>                                
+            <dd>{{ item.autor }}</dd>                                
           </dl>
         </div>
         <!-- /.box-body -->

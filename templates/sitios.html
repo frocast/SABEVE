@@ -10,38 +10,15 @@
               <table id="example1" class="table table-bordered table-striped">
                 <thead>
                 <tr>
-                  <th>Links</th>
-                  <th></th>
+                  <th>Links</th>                  
                 </tr>
                 </thead>
                 <tbody>
+                  {%- for sitio in sitios -%}
                 <tr>
-                  <td><a href="http://www.med.harvard.edu/aanlib/home.html">Atlas Neuro Anatomía Harvard School Medicine</a></td>
-                </tr>
-                <tr>
-                  <td><a href="http://www.nlm.nih.gov/medlineplus/spanish/">MEDLINE</a></td>
-                </tr>
-                <tr>
-                    <td><a href="http://www.insp.mx/">Instituto Nacional de Salud Pública</a></td>
-                </tr>
-                <tr>
-                     <td><a href="http://www.gob.mx/salud/">Secretaría de Salud</a></td>
-                </tr>   
-                <tr>
-                    <td><a href="http://www.cenetec.salud.gob.mx/">Centro Nacional de Excelencia Tecnológica en Salud</a></td>
-                </tr>
-                <tr>
-                    <td><a href="http://www.himfg.edu.mx/interior/heme_db.html">Biblioteca del Hospital Infantil de México</a></td>
-                </tr>  
-                <tr>
-                        <td><a href="http://www.who.int/es/">Organización Mundial de la Salud</a></td>
-                    </tr>
-                    <tr>
-                        <td><a href="http://www.paho.org/hq/?lang=es">Organización Panamericana de la Salud</a></td>
-                    </tr> 
-                    <tr>
-                            <td><a href="http://www.cij.gob.mx/">Centros de Atención Juvenil A.C.</a></td>
-                        </tr>                     
+                  <td><a href="{{ sitio.link }}">{{ sitio.titulo }}</a></td>
+                </tr>                   
+                {%- endfor -%}
                 </tbody>
                 <tfoot>
                 <tr>

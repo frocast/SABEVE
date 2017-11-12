@@ -2,64 +2,67 @@
         <div class="col-md-2">
           
         </div>
+        {%- for tema in info_tema -%}
                 <div class="col-md-8">                        
                 <!-- Post -->
                 
                 <br>
+                
                 <div class="post">
                   <div class="user-block">
                     <img class="img-circle img-bordered-sm" src="../static/dist/img/user_esime.jpg" alt="user image">
                         <span class="username">
-                          <a href="#">{{ info_tema[0][1] }}</a>
+                          <a href="#">{{ tema.titulo }}</a>
                           <a href="#" class="pull-right btn-box-tool"><i class="fa fa-times"></i></a>
                         </span>
-                    <span class="description">Publicación comparida - {{ info_tema[0][4] }}</span>
+                    <span class="description">Publicación comparida - {{ tema.fecha }}</span>                    
                   </div>
                   <!-- /.user-block -->
                   <p>
-                    {{ info_tema[0][3] }}
+                    {{ tema.mensaje }}
                   </p>
                   <ul class="list-inline">
-                    <li><a href="#" class="link-black text-sm"><i class="fa fa-share margin-r-5"></i> Compartir</a></li>
-                    <li><a href="#" class="link-black text-sm"><i class="fa fa-thumbs-o-up margin-r-5"></i> Like</a>
+                    <li>Tema Creado por <a href="/profile?u={{ tema.autor }}" class="link-black text-sm"><i class="fa fa-share margin-r-5"></i> {{ tema.autor }}</a></li>
+                    <!-- <li><a href="#" class="link-black text-sm"><i class="fa fa-thumbs-o-up margin-r-5"></i> Like</a> -->
                     </li>
                     <li class="pull-right">
-                      <a href="#" class="link-black text-sm"><i class="fa fa-comments-o margin-r-5"></i> Comentarios
-                        (1)</a></li>
+                      <a href="/foro/mensajes?id_tema={{ tema.id_tema }}" class="link-black text-sm"><i class="fa fa-comments-o margin-r-5"></i> Comentarios
+                        {{ comentarios }}</a></li>
+                        <br>
                   </ul>              
-                </div>
+                </div>                
                 <!-- /.post -->
                 {%- if info_mensajes -%}
-                {%- for item in info_mensajes -%}
+                {%- for mensaje in info_mensajes -%}
                 <!-- Post -->
                 <div class="post clearfix">
                   <div class="user-block">
                     <img class="img-circle img-bordered-sm" src="../static/dist/img/user_esime.jpg" alt="User Image">
                         <span class="username">
-                          <a href="#">{{ item[0] }}</a>
+                          <a href="/profile?u={{ mensaje.email }}">{{ mensaje.email }}</a>
                           <a href="#" class="pull-right btn-box-tool"><i class="fa fa-times"></i></a>
                         </span>
-                    <span class="description">Mensaje enviado - {{ item[2] }}</span>
+                    <span class="description">Mensaje enviado - {{ mensaje.fecha }}</span>
                   </div>
                   <!-- /.user-block -->
                   <p>
-                    {{ item[3] }}
+                    {{ mensaje.mensaje }}
                   </p>
                 </div>
                 {%- endfor -%}
-                {%- endif -%}
-                
+                {%- endif -%}                
                 <form class="form-horizontal" method="post" action="/foro/messagesave">
                   <div class="form-group margin-bottom-none">
                     <div class="col-sm-9">
                       <input name="mensaje" class="form-control input-sm" placeholder="Responder">
-                      <input name="tema_id" type="hidden" class="form-control input-sm" value="{{ info_tema[0][0] }}">
-                    </div>
+                      <input name="tema_id" type="hidden" class="form-control input-sm" value="{{ tema.id_tema }}">
+                    </div>                    
                     <div class="col-sm-3">
                       <button type="submit" class="btn btn-danger pull-right btn-block btn-sm">Enviar</button>
                     </div>
                   </div>
                 </form>
-          </div>
+          </div>          
+          {%- endfor -%}
             <div class="col-md-2"></div>
 </div>

@@ -11,9 +11,9 @@
                 <div class="form-group">
                         <label>Seleccione un tema</label>
                           <select name="id_mooc" class="form-control select2" style="width: 100%;">                            
-                              {%- for item in resultados -%}
-                            <option value="{{ item[0] }}">{{ item[2] }}</option>
-                              {%-endfor-%}
+                              {%- for tema in temas -%}
+                            <option value="{{ tema.id_mooc }}">{{ tema.titulo }}</option>
+                              {%- endfor -%}
                           </select>
                       </div>
                       <div class="form-group">

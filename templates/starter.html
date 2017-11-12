@@ -315,7 +315,7 @@ desired effect
           <li class="treeview">
             <a href="#">
               <i class="fa fa-play"></i> 
-              <span>MOOC's</span>
+              <span>Contenidos Complementarios</span>
             </a>
             <ul class="treeview-menu">
                 {%- if tipo == "Profesor" or tipo == "Admin" -%}
@@ -356,13 +356,46 @@ desired effect
                 <small class="label pull-right bg-green"></small>
               </span>
             </a>
-          </li>
-          <li>
+          </li>          
+              {%- if tipo == "Profesor" or tipo == "Admin" -%}
+              <li class="treeview">
+                  <a href="#">
+                    <i class="fa fa-institution"></i>
+                    <span>Sitios de Interes</span>
+                    <span class="pull-right-container">
+                      <!-- <span class="label label-primary pull-right">4</span> -->
+                    </span>
+                  </a>
+                  <ul class="treeview-menu">                  
+                    <li><a href="/sitios"><i class="fa fa-newspaper-o"></i> Ver</a></li>                  
+                    <li><a href="/nuevoSitio"><i class="fa fa-book"></i> Registrar</a></li>
+                  </ul>
+                </li>
+            {%- else -%}
+            <li>
             <a href="/sitios">
               <i class="fa fa-link"></i>
               <span>Sitios de Interes</span>
             </a>
-          </li>
+          </li>            
+            {%- endif-%}  
+          </li>          
+          {%- if tipo == "Admin" -%}
+          <li class="treeview">
+              <a href="#">
+                <i class="fa fa-institution"></i>
+                <span>Administrador</span>
+                <span class="pull-right-container">
+                  <!-- <span class="label label-primary pull-right">4</span> -->
+                </span>
+              </a>
+              <ul class="treeview-menu">                  
+                <li><a href="/menuAdmin"><i class="fa fa-newspaper-o"></i> Ver</a></li>                  
+                <!-- <li><a href="/nuevoSitio"><i class="fa fa-book"></i></a></li> -->
+              </ul>
+            </li>
+        {%- endif -%}
+        <li>                    
       </ul>
       <!-- /.sidebar-menu -->
     </section>

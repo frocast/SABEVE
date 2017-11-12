@@ -1,13 +1,13 @@
 <div class="row">
     
-  {%- for item in info_mooc -%}
+  {%- for tema in info_mooc -%}
     <div class="col-md-4">
       <div class="thumbnail">
         <br>
-        <a href="/consulta_mooc?id={{ item[0] }}&d={{item[1]}}&t={{item[2]}}&a={{item[3]}}">
+        <a href="/consulta_mooc?id={{ tema.id_mooc }}&d={{tema.descripcion}}&t={{tema.titulo}}&a={{tema.email}}">
         <div class="caption">
-          <h3>{{ item[2] }}</h3>
-          <p>{{ item[1] }}</p>          
+          <h3>{{ tema.titulo }}</h3>
+          <p>{{tema.descripcion }}</p>          
         </div>
       </a>
       </div>

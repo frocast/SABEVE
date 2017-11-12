@@ -1,0 +1,149 @@
+<div class="row">       
+    <div class="col-md-6">
+        <div class="box">
+            <div class="box-header">
+              <h3 class="box-title">Resultados de la consulta</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <table id="example1" class="table table-bordered table-striped">
+                <thead>                  
+                <tr>
+                    <th>Usuario(email)</th>
+                    <th>Rol</th>                    
+                    <th>Accion</th>                    
+                </tr>
+                </thead>
+                <tbody>
+                  {%- for usuario in usuarios -%}
+                  <tr>
+                    <td> {{ usuario.email }} </td>      
+                    <td> {{ usuario.knd }} </td>                    
+                    <td><a href="/eliminar?link={{ usuario.email }}" class="btn btn-danger btn-md"> Eliminar </a></td>                                   
+                  </tr>
+                  {%- endfor -%}
+                </tbody>
+                <tfoot>
+                <tr>
+                  <th>Usuario(email)</th>
+                  <th>Rol</th>                    
+                  <th>Accion</th>                                 
+                </tr>
+                </tfoot>
+              </table>
+            </div>
+            <!-- /.box-body -->
+          </div>
+        </div>
+          <!-- /.box -->
+        <div class="col-md-6">
+                <div class="box">
+                        <div class="box-header">
+                          <h3 class="box-title">Resultados de la consulta</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                          <table id="example1" class="table table-bordered table-striped">
+                            <thead>                  
+                            <tr>
+                                <th>Usuario(email)</th>
+                                <th>Rol</th>                    
+                                <th>Accion</th>                    
+                            </tr>
+                            </thead>
+                            <tbody>
+                              {%- for usuario in usuarios -%}
+                              <tr>
+                                <td> {{ usuario.email }} </td>      
+                                <td> {{ usuario.knd }} </td>                    
+                                <td><a href="/eliminar?link={{ usuario.email }}" class="btn btn-danger btn-md"> Eliminar </a></td>                                   
+                              </tr>
+                              {%- endfor -%}
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                              <th>Usuario(email)</th>
+                              <th>Rol</th>                    
+                              <th>Accion</th>                                 
+                            </tr>
+                            </tfoot>
+                          </table>
+                        </div>
+                        <!-- /.box-body -->
+                      </div>
+        </div>
+        <div class="col-md-6">
+                <div class="box">
+                    <div class="box-header">
+                      <h3 class="box-title">Resultados de la consulta</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                      <table id="example1" class="table table-bordered table-striped">
+                        <thead>                  
+                        <tr>
+                            <th>Usuario(email)</th>
+                            <th>Rol</th>                    
+                            <th>Accion</th>                    
+                        </tr>
+                        </thead>
+                        <tbody>
+                          {%- for usuario in usuarios -%}
+                          <tr>
+                            <td> {{ usuario.email }} </td>      
+                            <td> {{ usuario.knd }} </td>                    
+                            <td><a href="/eliminar?link={{ usuario.email }}" class="btn btn-danger btn-md"> Eliminar </a></td>                                   
+                          </tr>
+                          {%- endfor -%}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                          <th>Usuario(email)</th>
+                          <th>Rol</th>                    
+                          <th>Accion</th>                                 
+                        </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                    <!-- /.box-body -->
+                  </div>
+                </div>
+                  <!-- /.box -->
+                <div class="col-md-6">
+                        <div class="box">
+                                <div class="box-header">
+                                  <h3 class="box-title">Resultados de la consulta</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                  <table id="example1" class="table table-bordered table-striped">
+                                    <thead>                  
+                                    <tr>
+                                        <th>Usuario(email)</th>
+                                        <th>Rol</th>                    
+                                        <th>Accion</th>                    
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                      {%- for usuario in usuarios -%}
+                                      <tr>
+                                        <td> {{ usuario.email }} </td>      
+                                        <td> {{ usuario.knd }} </td>                    
+                                        <td><a href="/eliminar?link={{ usuario.email }}" class="btn btn-danger btn-md"> Eliminar </a></td>                                   
+                                      </tr>
+                                      {%- endfor -%}
+                                    </tbody>
+                                    <tfoot>
+                                    <tr>
+                                      <th>Usuario(email)</th>
+                                      <th>Rol</th>                    
+                                      <th>Accion</th>                                 
+                                    </tr>
+                                    </tfoot>
+                                  </table>
+                                </div>
+                                <!-- /.box-body -->
+                              </div>
+                </div>
+          
+</div>

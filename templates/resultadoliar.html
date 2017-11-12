@@ -22,17 +22,17 @@
                 </tr>
                 </thead>
                 <tbody>
-                  {%- for item in resultados -%}
+                  {%- for libro in libros -%}
                   <tr>
-                    <td> <img src="{{ item[9] }}" height="140" width="100"> </td>
-                    <td>{{ item[1]}}</td>
-                    <td><a href="/render_pdf?link={{ item[8] }}&titulo={{ item[0] }}">{{ item[0] }} </a></td>
-                    <td>{{ item[3] }}</td>
-                    <td>{{ item[2] }}</td>
-                    <td>{{ item[4] }}</td>
-                    <td>{{ item[6] }}</td>
-                    <td>{{ item[5] }}</td>
-                    <td>{{ item[7] }}</td>                    
+                    <td> <img src="{{ libro.portada }}" height="140" width="100"> </td>
+                    <td>{{ libro.autor }}</td>
+                    <td><a href="/render_pdf?link={{ libro.link }}&titulo={{ libro.titulo }}">{{ libro.titulo }} </a></td>
+                    <td>{{ libro.tipo }}</td>
+                    <td>{{ libro.ISSNISBN }}</td>
+                    <td>{{ libro.editorial }}</td>
+                    <td>{{ libro.idioma }}</td>
+                    <td>{{ libro.fecha }}</td>
+                    <td>{{ libro.resena }}</td>                    
                   </tr>
                   {%- endfor -%}
                 </tbody>

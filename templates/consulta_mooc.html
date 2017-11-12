@@ -1,12 +1,12 @@
 <div class="row">
     
-  {%- for item in info_contenido -%}
+  {%- for contenido in info_contenido -%}
     <div class="col-md-4">
       <div class="thumbnail">
         <br>
-        <a href="/vista_mooc?id={{ item[0] }}&t={{item[1]}}&u={{item[2]}}&a={{item[3]}}">
+        <a href="/vista_mooc?id={{ contenido.id_mooc }}&t={{ contenido.titulo }}&u={{ contenido.url }}&a={{ contenido.email }}">
         <div class="caption">
-          <h3>{{ item[1] }}</h3>          
+          <h3>{{ contenido.titulo }}</h3>          
         </div>
       </a>
       </div>
