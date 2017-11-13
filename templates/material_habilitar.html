@@ -21,15 +21,26 @@
                 <tr>
                   <th>ID</th>
                   <th>Título</th>
+                  <th>Acción</th>
 
                 </tr>
-                {%- for tema in temas -%}
+                {%- for tema in contenidos -%}
                 <tr>
-                  <td>{{ tema.id_tema }}</td>
-                  <td><a href="/material_tema?id_tema={{ tema.id_tema }}">{{ tema.tema }}</a></td>
-                  
-                  <!-- <td><span class="label label-success">Revisado</span></td> -->
-                  
+                  <td>{{ tema.id_contenido }}</td>
+                  <td >{{ tema.subtema }}</td>                  
+                  <!-- <td><span class="label label-success">Revisado</span></td> -->                  
+                  <td>
+                      <form class="form_horizontal text-center" action="/subtema_habilitar" method="post">    
+                        <input name="id_contenido" value="{{ tema.id_contenido }}" type="hidden">                        
+
+                        <label for="radio">Habilitar</label>      
+                        <input name="hab" value="Enabled" type="radio" id="optionsRadios1">
+                        <label for="radio">Deshabilitar</label>      
+                        <input name="hab" value="Disabled" type="radio" id="optionsRadios1" checked> 
+                                                                                 
+                        <button type="submit" class="btn btn-sm bg-red">Guardar </button>    
+                      </form>
+                  </td>
                 </tr>  
                 {%- endfor-%}              
               </table>

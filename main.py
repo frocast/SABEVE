@@ -57,9 +57,10 @@ class Usuarios(db.Model):
     fecha_na = db.Column(db.String(15))
     institucion = db.Column(db.String(200))
     genero = db.Column(db.String(10))
-    pasw = db.Column(db.String(20))       
+    pasw = db.Column(db.String(20)) 
+    id_grupo = db.Column(db.Integer)      
 
-    def __init__(self, nombre="", apellido="", email="", knd="", fecha_na="", institucion="", genero="", pasw=""):
+    def __init__(self, nombre, apellido, email, knd, fecha_na, institucion, genero, pasw, id_grupo):
         self.Nombre = nombre
         self.Apellido = apellido   
         self.email = email   
@@ -68,6 +69,22 @@ class Usuarios(db.Model):
         self.institucion = institucion   
         self.genero = genero  
         self.pasw = pasw
+        self.id_grupo = id_grupo
+
+class Intereses(db.Model):
+    id_intereses = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(50))    
+    pais = db.Column(db.String(50))        
+    habilidades = db.Column(db.String(1000))        
+    nota = db.Column(db.String(1000))        
+    institucion = db.Column(db.String(100))        
+
+    def __init__(self, email, pais, habilidades, nota, institucion):                        
+        self.email = email                                            
+        self.pais = pais
+        self.habihabilidades =habilidades
+        self.nota = nota
+        self.institucion = institucion
 
 class Biblioteca(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -197,7 +214,40 @@ class Sitios(db.Model):
         self.titulo = titulo
         self.link = link
               
-     
+class Grupos(db.Model):
+    id_grupo = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(50)) 
+    nombre = db.Column(db.String(100))        
+
+    def __init__(self, email, nombre):                        
+        self.email = email                   
+        self.nombre = nombre                   
+
+class Temas(db.Model):
+    
+    id_tema = db.Column(db.Integer, primary_key=True)
+    id_grupo = db.Column(db.Integer) 
+    tema = db.Column(db.String(100))  
+    email = db.Column(db.String(50))        
+
+    def __init__(self, id_grupo, tema, email):                        
+        self.id_grupo = id_grupo                   
+        self.tema = tema
+        self.email = email
+
+class Contenidos_tema(db.Model):
+    id_contenido = db.Column(db.Integer, primary_key=True)
+    id_tema = db.Column(db.Integer)    
+    subtema = db.Column(db.String(100))        
+    pdf_link = db.Column(db.String(1000))        
+    habilitar = db.Column(db.String(10))        
+
+    def __init__(self, id_tema, subtema, pdf_link, habilitar):                        
+        self.id_tema = id_tema                                             
+        self.subtema = subtema
+        self.pdf_link = pdf_link
+        self.habilitar = habilitar
+        
 
 def rendering_template(content_rendered = None, head_title = '', head_description = '', main_template = 'starter.html'):
     """ Main template rendering """
@@ -222,8 +272,10 @@ def inicio():
 
     if request.method == 'GET':
         if "email" in session:
+            com = Usuarios.query.filter_by(id_grupo=session['grupo']).all()
             usuario = Usuarios.query.filter_by(email=session['email']).all()
-            html_content = { 'usuario':usuario }
+            interes = Intereses.query.filter_by(email=session['email']).all()
+            html_content = { 'usuario':usuario, 'companeros': len(com), 'intereses':interes }
             return rendering_template(JINJA_ENVIRONMENT.get_template('profile.html').render(html_content), 'Perfil de Usuario') #prueba_template.render(valores)#render_template('starter.html', creadores = jinja2.Template.render(render_template('formulario.html')))	
         else:
                 return redirect('/login')
@@ -235,13 +287,35 @@ def profile():
     """Return a friendly HTTP greeting."""
 
     if request.method == 'GET':       
-        email = request.args['u']
+        email = request.args['u']        
         usuario = Usuarios.query.filter_by(email=email).all()
-        html_content = { 'usuario':usuario }
+        interes = Intereses.query.filter_by(email=email).all()
+        for dato in usuario:            
+            com = Usuarios.query.filter_by(id_grupo=dato.id_grupo).all()            
+        html_content = { 'usuario':usuario, 'companeros': len(com), 'intereses':interes  }
         return rendering_template(JINJA_ENVIRONMENT.get_template('profile.html').render(html_content), 'Perfil de Usuario') #prueba_template.render(valores)#render_template('starter.html', creadores = jinja2.Template.render(render_template('formulario.html')))	        
+    institucion = request.form['institucion']  
+    pais = request.form['pais']  
+    nota = request.form['nota']  
+    habilidades = request.form['habilidades']  
 
-    if request.method == 'POST':
-        return "Acceso por metodo post"    
+    interes = Intereses.query.filter_by(email=session['email']).first()
+
+    if session['email'] in interes.email:
+        interes = Intereses.query.filter_by(email=session['email']).update(dict(pais=pais))    
+        db.session.commit()
+        interes = Intereses.query.filter_by(email=session['email']).update(dict(institucion=institucion))    
+        db.session.commit()
+        interes = Intereses.query.filter_by(email=session['email']).update(dict(nota=nota))    
+        db.session.commit()
+        interes = Intereses.query.filter_by(email=session['email']).update(dict(habilidades=habilidades))    
+        db.session.commit()    
+    else:
+        interes = Intereses(session['email'],pais,habilidades,nota,institucion)
+        db.session.add(interes)
+        db.session.commit()
+    return redirect(url_for('inicio'))
+        
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -269,6 +343,7 @@ def login():
                 session['nombre'] = usuario.Nombre
                 session['kind'] = usuario.knd
                 session['fecha_na'] = usuario.fecha_na
+                session['grupo'] = usuario.id_grupo
     except: 
         return "Error en el Servidor"
     return redirect('/')
@@ -280,6 +355,7 @@ def logout():
     session.pop('nombre',None)
     session.pop('kind',None)
     session.pop('fecha_na',None)   
+    session.pop('grupo',None)   
     print len(session)
     # revisar funcion pop session.pop('apellido',None)
     return redirect('/login')    
@@ -300,13 +376,14 @@ def register():
         genero = request.form['gen']
         fecha_na = request.form['fecha_na']
         institucion = request.form['institucion']
+        id_grupo = request.form['id_grupo']
         terms = request.form['terms']
         
         # Agregar comprobación de usuario existente
         if name and lastName and email and pasw and paswc and terms and knd and institucion and fecha_na and genero:
             if terms == "True":
                 if pasw == paswc:
-                    usuario = Usuarios(name, lastName, email, knd, fecha_na, institucion, genero, pasw)
+                    usuario = Usuarios(name, lastName, email, knd, fecha_na, institucion, genero, pasw, id_grupo)
                     db.session.add(usuario)
                     db.session.commit()
                     #query = 'INSERT INTO usuarios (Nombre, Apellido, email, knd, fecha_na, institucion, genero, pasw) VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s");' %(name, lastName, email, knd, fecha_na, institucion, genero, pasw)
@@ -315,6 +392,7 @@ def register():
                     session['nombre'] = name
                     session['kind'] = knd
                     session['fecha_na'] = fecha_na
+                    session['grupo'] = id_grupo
                     return redirect('/')
                 else:
                     return render_template('/register.html', errortype=2)
@@ -381,9 +459,36 @@ def nuevo_registro():
     #run_query(query)
     nuevoLibro = Biblioteca(titulo=titulo, autor=autor, ISSNISBN=ISSN_ISBN, tipo=tipo, editorial=editorial, fecha=fecha, idioma=idioma, resena=resena, link=link, portada=portada)
     db.session.add(nuevoLibro)
-    print db.session.commit()
+    db.session.commit()
     html_content = { 'ruta': 'nuevoRegistro', 'd_ruta':'Nuevo Registro'}
     return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), 'Consulta', 'Elementos encontrados') 
+
+
+@app.route('/crear_grupo', methods=['GET','POST'])
+def crear_grupo():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':        
+        return rendering_template(JINJA_ENVIRONMENT.get_template('crear_grupo.html').render(), 'Crear Grupos', 'Crear grupos de estudio')
+    nombre_de_grupo =  request.form['nombre_de_grupo']
+    grupo = Grupos(session['email'], nombre_de_grupo)    
+    db.session.add(grupo)
+    db.session.commit()
+    return redirect(url_for('crear_grupo'))
+
+@app.route('/agregar_alumnos', methods=['GET','POST'])
+def agregar_alumnos():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':     
+        grupos = Grupos.query.filter_by(email=session['email']).all()
+        html_content = { 'grupos': grupos }
+        return rendering_template(JINJA_ENVIRONMENT.get_template('agregar_grupo.html').render(html_content), 'Agregar Alumno', 'Agregar un alumno a un grupo')
+    id_grupo =  request.form['id_grupo']
+    corre_alu =  request.form['corre_alu']
+    alumno = Usuarios.query.filter_by(email=corre_alu).update(dict(id_grupo=id_grupo))
+    db.session.commit()
+    return redirect(url_for('inicio'))
 
 # Clases -----------------------------------------------------------------------------
 # clase_registro(profe), clase_material(ambos), clase_habilitar(prof) pdf, ppt
@@ -391,26 +496,81 @@ def nuevo_registro():
 def clase_registro():
     """Return a friendly HTTP greeting."""
     
+    if request.method == 'GET':        
+        grupos = Grupos.query.filter_by(email=session['email']).all()
+        html_content = { 'grupos': grupos }        
+        return rendering_template(JINJA_ENVIRONMENT.get_template('registro_tema_clase.html').render(html_content), 'Material', 'Consulte el material disponible')
+    tema = request.form['tema']
+    id_grupo = request.form['id_grupo']
+    tema = Temas(id_grupo, tema, session['email'])
+    db.session.add(tema)
+    db.session.commit()
+    return redirect('/agregar_contenido')
+
+@app.route('/agregar_contenido', methods=['GET','POST'])
+def agregar_contenido():
+    """Return a friendly HTTP greeting."""
+    
     if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('material_clases.html').render(), 'Material', 'Consulte el material disponible')
-    nombre = request.form['idioma']
-    return nombre 
+        temas = Temas.query.filter_by(email=session['email']).all()
+        html_content = { 'temas': temas }
+        return rendering_template(JINJA_ENVIRONMENT.get_template('contenido_registro.html').render(html_content), 'Material', 'Consulte el material disponible')
+    id_tema = request.form['id_tema']
+    subtema = request.form['subtema']
+    pdf_link = request.form['pdf_link']
+    habilitar = request.form['habilitar']
+    contenido = Contenidos_tema(id_tema,subtema, pdf_link, habilitar)
+    db.session.add(contenido)
+    db.session.commit()
+    return redirect('clase_registro')
 
 @app.route('/clase_habilitar', methods=['GET','POST'])
 def clase_habilitar():
     """Return a friendly HTTP greeting."""
     
-    if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('material_clases.html').render(), 'Material', 'Consulte el material disponible')
-    nombre = request.form['idioma']
-    return nombre 
+    if request.method == 'GET':    
+        temas = Temas.query.filter_by(email=session['email']).all()
+        html_content = { 'temas': temas }
+        return rendering_template(JINJA_ENVIRONMENT.get_template('tema_selec.html').render(html_content), 'Material', 'Consulte el material disponible')
+    habilitar = request.form['hab']
+
+    return redirect(url_for('material_tema'))
+
+@app.route('/subtema_habilitar', methods=['GET','POST'])
+def subtema_habilitar():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':   
+        id_tema = request.args['id_tema'] 
+        contenidos = Contenidos_tema.query.filter_by(id_tema=id_tema).all()
+        html_content = { 'contenidos': contenidos }
+        return rendering_template(JINJA_ENVIRONMENT.get_template('material_habilitar.html').render(html_content), 'Material', 'Consulte el material disponible')
+    id_contenido = request.form['id_contenido']
+    habilitar = request.form['hab']
+    contenido = Contenidos_tema.query.filter_by(id_contenido=id_contenido).update(dict(habilitar=habilitar))
+    db.session.commit()
+    return redirect(url_for('clase_material'))
 
 @app.route('/clase_material', methods=['GET','POST'])
 def clase_material():
     """Return a friendly HTTP greeting."""
     
-    if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('material_clases.html').render(), 'Material', 'Consulte el material disponible')
+    if request.method == 'GET':        
+        temas = Temas.query.filter_by(id_grupo=session['grupo']).all()
+        html_content = { 'temas': temas }
+        return rendering_template(JINJA_ENVIRONMENT.get_template('material_clases.html').render(html_content), 'Material', 'Consulte el material disponible')
+    nombre = request.form['idioma']
+    return nombre
+
+@app.route('/material_tema', methods=['GET','POST'])
+def material_tema():
+    """Return a friendly HTTP greeting."""
+    
+    if request.method == 'GET':        
+        id_tema = request.args['id_tema']
+        contenidos = Contenidos_tema.query.filter_by(id_tema=id_tema).all()
+        html_content = { 'contenidos': contenidos }
+        return rendering_template(JINJA_ENVIRONMENT.get_template('material_temas.html').render(html_content), 'Material', 'Consulte el material disponible')
     nombre = request.form['idioma']
     return nombre
 
