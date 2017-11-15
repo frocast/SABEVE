@@ -157,12 +157,14 @@ class Moocs(db.Model):
     id_mooc = db.Column(db.Integer, primary_key=True)
     descripcion = db.Column(db.String(500))
     titulo = db.Column(db.String(100))
-    email = db.Column(db.String(50))    
+    email = db.Column(db.String(50)) 
+    id_grupo = db.column(db.Integer)   
 
-    def __init__(self, descripcion, titulo, email):                
+    def __init__(self, descripcion, titulo, email, id_grupo):                
         self.descripcion = descripcion
         self.titulo = titulo 
         self.email = email
+        self.id_grupo = id_grupo
 
 class Contenido_mooc(db.Model):
     id_contenido = db.Column(db.Integer, primary_key=True)
@@ -484,7 +486,7 @@ def agregar_alumnos():
         grupos = Grupos.query.filter_by(email=session['email']).all()
         html_content = { 'grupos': grupos }
         return rendering_template(JINJA_ENVIRONMENT.get_template('agregar_grupo.html').render(html_content), 'Agregar Alumno', 'Agregar un alumno a un grupo')
-    id_grupo =  request.form['id_grupo']
+    id_grupo =  int(request.form['id_grupo'])
     corre_alu =  request.form['corre_alu']
     alumno = Usuarios.query.filter_by(email=corre_alu).update(dict(id_grupo=id_grupo))
     db.session.commit()
@@ -659,12 +661,15 @@ def registro_tema_mooc():
     """Return a friendly HTTP greeting."""
     
     if request.method == 'GET':
-        return rendering_template(JINJA_ENVIRONMENT.get_template('registro_tema_mooc.html').render(), "Registro de Nuevo tema para MOOC", 'Aprender de forma sencilla')
+        grupos = Grupos.query.filter_by(email=session['email']).all()
+        html_content = { 'grupos': grupos }
+        return rendering_template(JINJA_ENVIRONMENT.get_template('registro_tema_mooc.html').render(html_content), "Registro de Nuevo tema para MOOC", 'Aprender de forma sencilla')
     titulo = request.form['titulo']
     descrip = request.form['descrip']
+    id_grupo = request.form['id_grupo']
     
     #run_query('INSERT INTO moocs (descripcion, titulo, email) VALUES ("%s", "%s", "%s");' %(descrip, titulo, session['email']))
-    tema_mooc = Moocs(descrip, titulo, session['email'])
+    tema_mooc = Moocs(descrip, titulo, session['email'], id_grupo)
     db.session.add(tema_mooc)
     db.session.commit()
     html_content = {'ruta':'moocs', 'd_ruta':'Regresar a Moocs'}
@@ -675,7 +680,7 @@ def registro_mooc():
     """Return a friendly HTTP greeting."""
     
     if request.method == 'GET':
-        consulta = 'SELECT * FROM moocs WHERE email = "%s";' %(session['email'])        
+        #consulta = 'SELECT * FROM moocs WHERE email = "%s";' %(session['email'])        
         temas = Moocs.query.filter_by(email=session['email']) #run_query(consulta)
         html_content = { 'temas':temas }
         return rendering_template(JINJA_ENVIRONMENT.get_template('registro_mooc.html').render(html_content), "Registro de Nuevo tema para MOOC", 'Aprender de forma sencilla')
@@ -708,7 +713,7 @@ def consulta_tema_mooc():
     
     if request.method == 'GET':
         #consulta = 'SELECT * FROM moocs WHERE email = "%s";' %(session['email']) # CAMBIAR POR ID DEL GRUPO
-        temas_mooc = Moocs.query.filter_by(email=session['email']).all() 
+        temas_mooc = Moocs.query.filter_by(id_grupo=1).all() 
         html_content = { 'info_mooc':temas_mooc }
         return rendering_template(JINJA_ENVIRONMENT.get_template('consulta_tema_mooc.html').render(html_content), "Temas de MOOC", 'Aprender de forma sencilla')
 
