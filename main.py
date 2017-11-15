@@ -97,7 +97,7 @@ class Biblioteca(db.Model):
     idioma = db.Column(db.String(20))
     resena = db.Column(db.String(5000))
     link = db.Column(db.String(500))
-    portada = db.Column(db.String(500))       
+    portada = db.Column(db.String(5000))       
 
     def __init__(self, titulo="", autor="", ISSNISBN="", tipo="", editorial="", fecha=0, idioma="", resena="", link="", portada=""):
         self.titulo = titulo
