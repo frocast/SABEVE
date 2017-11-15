@@ -158,7 +158,7 @@ class Moocs(db.Model):
     descripcion = db.Column(db.String(500))
     titulo = db.Column(db.String(100))
     email = db.Column(db.String(50)) 
-    id_grupo = db.column(db.Integer)   
+    id_grupo = db.Column(db.Integer)   
 
     def __init__(self, descripcion, titulo, email, id_grupo):                
         self.descripcion = descripcion
