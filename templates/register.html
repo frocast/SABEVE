@@ -57,6 +57,9 @@
   </div>
 
   <div class="register-box-body">
+    {%-if registrado-%}
+    <p class="login-box-msg text-red">EL CORREO ELECTRONICO YA HA SIDO REGISTRADO</p>
+    {%-endif-%}
     <p class="login-box-msg lead">REGISTRO DE USUARIO</p>
 
     <form action="/register" method="post">

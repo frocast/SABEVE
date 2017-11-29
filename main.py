@@ -22,13 +22,15 @@ import logging
 import datetime
 import socket
 import os
+import jwt
 
-from flask import Flask, render_template, request, redirect, session, url_for
-#from flask_talisman import Talisman
+from flask import Flask, render_template, request, redirect, session, url_for, jsonify, make_response
+from flask_talisman import Talisman
 # from flask_seasurf import SeaSurf
 from flask_sqlalchemy import SQLAlchemy
 import sqlalchemy
 import jinja2
+from functools import wraps
 
 #from dbconnect import connection, run_query           
 
@@ -37,10 +39,10 @@ app = Flask(__name__)
 app.secret_key='Clave_secreta'
 
 # csrf = SeaSurf(app)
-#Talisman(app)
+Talisman(app)
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:p3nt35t1ng@127.0.0.1/aula_virtual"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
+#app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:p3nt35t1ng@127.0.0.1/aula_virtual"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -270,7 +272,6 @@ def create_tables():
     except e:
         return e
 
-
 @app.route('/', methods=['GET','POST'])
 def inicio():
     """Return a friendly HTTP greeting."""
@@ -383,29 +384,31 @@ def register():
         institucion = request.form['institucion']
         id_grupo = request.form['id_grupo']
         terms = request.form['terms']
-        
-        # Agregar comprobación de usuario existente
-        if name and lastName and email and pasw and paswc and terms and knd and institucion and fecha_na and genero:
-            if terms == "True":
-                if pasw == paswc:
-                    usuario = Usuarios(name, lastName, email, knd, fecha_na, institucion, genero, pasw, id_grupo)
-                    db.session.add(usuario)
-                    db.session.commit()
-                    #query = 'INSERT INTO usuarios (Nombre, Apellido, email, knd, fecha_na, institucion, genero, pasw) VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s");' %(name, lastName, email, knd, fecha_na, institucion, genero, pasw)
-                    #print run_query(query)
-                    session['email'] = email
-                    session['nombre'] = name
-                    session['kind'] = knd
-                    session['fecha_na'] = fecha_na
-                    session['grupo'] = id_grupo
-                    return redirect('/')
-                else:
-                    return render_template('/register.html', errortype=2)
-            else:
-                return render_template('/register.html',errortype=1)
-        else:
-            return render_template('/register.html', errortype=0)
 
+        usuario = Usuarios.query.filter_by(email=email).first()
+        if not usuario:            
+            # Agregar comprobación de usuario existente
+            if name and lastName and email and pasw and paswc and terms and knd and institucion and fecha_na and genero:
+                if terms == "True":
+                    if pasw == paswc:
+                        usuario = Usuarios(name, lastName, email, knd, fecha_na, institucion, genero, pasw, id_grupo)
+                        db.session.add(usuario)
+                        db.session.commit()
+                        #query = 'INSERT INTO usuarios (Nombre, Apellido, email, knd, fecha_na, institucion, genero, pasw) VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s");' %(name, lastName, email, knd, fecha_na, institucion, genero, pasw)
+                        #print run_query(query)
+                        session['email'] = email
+                        session['nombre'] = name
+                        session['kind'] = knd
+                        session['fecha_na'] = fecha_na
+                        session['grupo'] = id_grupo
+                        return redirect('/')
+                    else:
+                        return render_template('/register.html', errortype=2)
+                else:
+                    return render_template('/register.html',errortype=1)
+            else:
+                return render_template('/register.html', errortype=0)
+        return render_template('register.html',registrado=True)
 # Biblioteca -----------------------------------------------------------
 # Consulta cambiar libro nuevo_registro
 @app.route('/libros', methods=['GET','POST'])
@@ -925,12 +928,216 @@ def menuAdmin():
     """Return a friendly HTTP greeting."""
 
     if request.method == 'GET':    
+            
+        eliminado=request.args['eexit']
+        print eliminado
         usuarios = Usuarios.query.all()
         clases = Temas.query.all()
-        html_content = {'usuarios':usuarios, 'clases': clases }    
+        html_content = {'usuarios':usuarios, 'clases': clases, 'eliminado':eliminado}    
         return rendering_template(JINJA_ENVIRONMENT.get_template('menuAdmin.html').render(html_content), 'Menu de Administracion', '') #prueba_template.render(valores)#render_template('starter.html', creadores = jinja2.Template.render(render_template('formulario.html')))	
 
     return redirect(url_for('inicio'))
+
+@app.route('/eliminar', methods=['GET','POST'])
+def eliminar():
+    """Return a friendly HTTP greeting."""
+
+    if request.method == 'GET':    
+        base = request.args['base'] 
+        id_eliminar = request.args['id'] 
+        if base == "usuarios":
+            usuario = Usuarios.query.filter_by(email=id_eliminar).first()
+            db.session.delete(usuario)
+            db.session.commit()            
+        elif base == "tema":
+            usuario = Temas.query.filter_by(email=id_eliminar).first()
+            db.session.delete(usuario)
+            db.session.commit()
+        else:
+            return redirect(url_for('menuAdmin',eexit=False))  
+    return redirect(url_for('menuAdmin',eexit=True))  
+
+#############################################################################################################
+#############################################################################################################
+#############################################################################################################
+#############################################################################################################
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+        if not token:
+            return jsonify({'mensaje': 'Token no encontrado'}), 401
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+            current_user = Usuarios.query.filter_by(email=data['email']).first()
+        except:
+            return jsonify({'mensaje': 'token invalido'}), 401
+        
+        return f(current_user, *args, **kwargs)
+    
+    return decorated
+
+@app.route('/api/v1.0/', methods=['GET'])
+def inicio_api():
+    return  jsonify({"mensaje":"API REST VERSION 1.0 - SABEVE - SEPI ESIME ZAC TELECOM"})
+
+@app.route('/api/v1.0/login/')
+def login_api():
+    auth = request.authorization
+    
+    if not auth or not auth.username or not auth.password:
+        return make_response(jsonify({'mensaje':'Datos incompletos'}), 401, {'WWW-Authenticate': 'Basic realm="Login Required!"'})
+    
+    usuario = Usuarios.query.filter_by(email=auth.username).first()
+    if not usuario:
+        return make_response(jsonify({'mensaje':'Usuario no registrado'}), 401, {'WWW-Authenticate': 'Basic realm="Login Required!"'})
+        
+    if usuario.pasw == auth.password:
+        token = jwt.encode({'email':usuario.email,'nombre':usuario.Nombre,'fecha_nacimiento':usuario.fecha_na,'id_grupo':usuario.id_grupo,'tipo':usuario.knd,'exp': datetime.datetime.utcnow()+datetime.timedelta(days=365)}, app.config['SECRET_KEY'])
+        return jsonify({'acces_token': token.decode('UTF-8')})        
+
+    return make_response(jsonify({'mensaje':'sin verificar'}), 401, {'WWW-Authenticate': 'Basic realm="Login Required!"'})
+
+@app.route('/api/v1.0/usuarios/')
+@token_required
+def usuarios_api(current_user):
+        
+    usuarios = Usuarios.query.all()
+    return jsonify({"usuarios": [{ "email": usuario.email, 
+                                   "nombre": usuario.Nombre, 
+                                   "apellido": usuario.Apellido, 
+                                   "tipo": usuario.knd,
+                                   "fecha_na": usuario.fecha_na,
+                                   "insititucion": usuario.institucion,
+                                   "genero": usuario.genero,
+                                   "password": usuario.pasw,                                   
+                                   "id_grupo": usuario.id_grupo
+                                   } for usuario in usuarios]})
+
+@app.route('/api/v1.0/usuarios/<email>')
+@token_required
+def usuarios_by_id_api(current_user, email):
+    usuarios = Usuarios.query.filter_by(email=email).all()
+    if not usuarios:
+        return jsonify({'mensaje':'Usuario no registrado'})
+    return jsonify({"usuario": [{ "email": usuario.email, 
+                                   "nombre": usuario.Nombre, 
+                                   "apellido": usuario.Apellido, 
+                                   "tipo": usuario.knd,
+                                   "fecha_na": usuario.fecha_na,
+                                   "insititucion": usuario.institucion,
+                                   "genero": usuario.genero,
+                                   "password": usuario.pasw,                                   
+                                   "id_grupo": usuario.id_grupo
+                                   } for usuario in usuarios]})
+
+@app.route('/api/v1.0/usuarios/', methods=['POST'])
+@token_required
+def nuevo_usuario_api(current_user):
+    datos = request.get_json()
+    email = datos.get('email')
+    nombre = datos.get('nombre')
+    apellido = datos.get('apellido')
+    tipo = datos.get('tipo')
+    fecha_na = datos.get('fecha_na')
+    institucion = datos.get('institucion')
+    genero = datos.get('genero')
+    password = datos.get('password')
+    id_grupo = datos.get('id_grupo')
+
+    usuario = Usuarios.query.filter_by(email=email).first()
+    if not usuario:    
+        usuario = Usuarios(nombre,apellido,email,tipo,fecha_na,institucion,genero,password,id_grupo)        
+        db.session.add(usuario)
+        db.session.commit()
+        return jsonify({'email':usuario.email}), 201  
+    return jsonify({'mensaje':'Usuario ya en la base de datos'}), 201  
+
+@app.route('/api/v1.0/usuarios/<email>', methods=['PUT'])
+@token_required
+def actualizar_usuarios(current_user, email):
+    usuario = Usuarios.query.filter_by(email=email).first()
+    if not usuario:
+        return jsonify({'mensaje':'no se encontro al usuario'})
+    datos_actualizados = request.get_json()
+    
+    usuario.institucion = datos_actualizados['institucion']
+    usuario.pasw = datos_actualizados['password']    
+    usuario.pasw = datos_actualizados['password']        
+    db.session.commit()
+
+    return jsonify({'mensaje': 'Datos de Usuario actualizados'})
+
+@app.route('/api/v1.0/usuarios/<email>', methods=['DELETE'])
+@token_required
+def eliminar_usuarios(current_user, email):
+    usuario = Usuarios.query.filter_by(email=email).first()
+    if not usuario:
+        return jsonify({'mensaje':'no se encontro al usuario'})
+    db.session.delete(usuario)
+    db.session.commit()
+    return jsonify({'mensaje':'Usuario Eliminado'})
+
+@app.route('/api/v1.0/biblioteca/')
+@token_required
+def biblioteca_api(current_user):
+        
+    libros = Biblioteca.query.all()
+    return jsonify({"Libros": [{ "id": libro.id, 
+                                   "titulo": libro.titulo, 
+                                   "autor": libro.autor, 
+                                   "ISSNISBN": libro.ISSNISBN,
+                                   "tipo": libro.tipo,
+                                   "editorial": libro.editorial,
+                                   "fecha": libro.fecha,
+                                   "idioma": libro.idioma,                                   
+                                   "resena": libro.resena,
+                                   "link": libro.link,
+                                   "portada": libro.portada                                   
+                                   } for libro in libros]})
+
+@app.route('/api/v1.0/biblioteca/<clave>/<idioma>/<fecha_inferior>/<fecha_superior>/')
+@token_required
+def biblioteca_by_id_api(current_user,clave,idioma,fecha_inferior,fecha_superior):
+    libros = Biblioteca.query.filter((Biblioteca.titulo==clave) | (Biblioteca.autor==clave) | (Biblioteca.ISSNISBN==clave) | (Biblioteca.idioma==idioma) | (Biblioteca.fecha.between(int(fecha_inferior), int(fecha_superior)))).order_by(Biblioteca.titulo.desc()).all()
+    return jsonify({"Libros": [{ "id": libro.id, 
+                                   "titulo": libro.titulo, 
+                                   "autor": libro.autor, 
+                                   "ISSNISBN": libro.ISSNISBN,
+                                   "tipo": libro.tipo,
+                                   "editorial": libro.editorial,
+                                   "fecha": libro.fecha,
+                                   "idioma": libro.idioma,                                   
+                                   "resena": libro.resena,
+                                   "link": libro.link,
+                                   "portada": libro.portada                                   
+                                   } for libro in libros]})                                 
+
+@app.route('/api/v1.0/biblioteca/', methods=['POST'])
+@token_required
+def nuevo_libro_api(current_user):
+    datos = request.get_json()
+
+    titulo = datos.get('titulo') # o titulo = dato['titulo']
+    autor = datos.get('autor')
+    ISSNIBSN = datos.get('ISSNISBN')
+    tipo = datos.get('tipo')
+    editorial = datos.get('editorial')
+    fecha = datos.get('fecha')
+    idioma = datos.get('idioma')
+    resena = datos.get('resena')
+    link = datos.get('link')
+    portada = datos.get('portada')    
+
+    libro = Biblioteca(titulo,autor,ISSNIBSN,tipo,editorial,fecha,idioma,resena,link,portada)        
+    db.session.add(libro)
+    db.session.commit()
+    return jsonify({'libro':libro.titulo}), 201  
 
 @app.errorhandler(404)
 def page_not_found(e):

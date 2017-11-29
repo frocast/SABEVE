@@ -1,30 +1,48 @@
-<div class="row">       
+<div class="row">   
+    {%- if eliminado=="True" -%}
+    <div class="row"> 
+        <div class="col-md-3"></div>
+    <div class="col-md-6">       
+    <div class="box">
+        <div class="box-header">
+          <h3 class="box-title text-center text-green">Registro Eliminado Exitosamente</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3"></div>
+  </div>
+    {%-endif-%}    
     <div class="col-md-6">
         <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Resultados de la consulta</h3>
+              <h3 class="box-title">Usuarios</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
               <table id="example1" class="table table-bordered table-striped">
                 <thead>                  
                 <tr>
+                    <th>Nombre</th>
                     <th>Usuario(email)</th>
                     <th>Rol</th>                    
                     <th>Accion</th>                    
                 </tr>
                 </thead>
-                <tbody>
+                <tbody>          
                   {%- for usuario in usuarios -%}
+                  {%- if usuario.knd != "Admin" -%}
                   <tr>
+                    <td> {{ usuario.Nombre }} </td>    
                     <td> {{ usuario.email }} </td>      
                     <td> {{ usuario.knd }} </td>                    
-                    <td><a href="/eliminar?link={{ usuario.email }}" class="btn btn-danger btn-md"> Eliminar </a></td>                                   
+                    <td><a href="/eliminar?base=usuarios&id={{ usuario.email }}" class="btn btn-danger btn-md"> Eliminar </a></td>                                   
                   </tr>
+                  {%- endif -%}
                   {%- endfor -%}
                 </tbody>
                 <tfoot>
-                <tr>
+                <tr>                 
+                  <th>Nombre</th>               
                   <th>Usuario(email)</th>
                   <th>Rol</th>                    
                   <th>Accion</th>                                 
@@ -34,5 +52,45 @@
             </div>
             <!-- /.box-body -->
           </div>
-        </div>        
+        </div>       
+         <!-- Despliegue de Clases  -->
+         <div class="col-md-6">
+          <div class="box">
+              <div class="box-header">
+                <h3 class="box-title">Clases Disponibles</h3>
+              </div>
+              <!-- /.box-header -->
+              <div class="box-body">
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>                  
+                  <tr>
+                      <th>Id Tema</th>
+                      <th>Tema</th>
+                      <th>Creador</th>                    
+                      <th>Accion</th>                    
+                  </tr>
+                  </thead>
+                  <tbody>
+                    {%- for clase in clases -%}
+                    <tr>
+                      <td> {{ clase.id_tema }} </td>      
+                      <td> {{ clase.tema }} </td>      
+                      <td> {{ clase.email }} </td>                    
+                      <td><a href="/eliminar?base=tema&id={{ clase.id_tema }}" class="btn btn-danger btn-md"> Eliminar </a></td>                                   
+                    </tr>
+                    {%- endfor -%}
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                    <th>Id Tema</th>
+                    <th>Tema</th>
+                    <th>Creador</th>                    
+                    <th>Accion</th>                                 
+                  </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.box-body -->
+            </div>
+          </div>     
 </div>
