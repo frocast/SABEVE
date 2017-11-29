@@ -33,17 +33,18 @@ import jinja2
 #from dbconnect import connection, run_query           
 
 app = Flask(__name__)
-print type(app)
+#print type(app)
 app.secret_key='Clave_secreta'
+
 # csrf = SeaSurf(app)
 #Talisman(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
-#app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:p3nt35t1ng@127.0.0.1/aula_virtual"
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:p3nt35t1ng@127.0.0.1/aula_virtual"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
-print template_dir
+#print template_dir
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader = jinja2.FileSystemLoader(template_dir),
     autoescape=False
@@ -925,7 +926,8 @@ def menuAdmin():
 
     if request.method == 'GET':    
         usuarios = Usuarios.query.all()
-        html_content = {'usuarios':usuarios }    
+        clases = Temas.query.all()
+        html_content = {'usuarios':usuarios, 'clases': clases }    
         return rendering_template(JINJA_ENVIRONMENT.get_template('menuAdmin.html').render(html_content), 'Menu de Administracion', '') #prueba_template.render(valores)#render_template('starter.html', creadores = jinja2.Template.render(render_template('formulario.html')))	
 
     return redirect(url_for('inicio'))
@@ -945,7 +947,7 @@ def server_error(e):
 if __name__ == '__main__':
     # This is used when running locally. Gunicorn is used to run the
     # application on Google App Engine. See entrypoint in app.yaml.
-    print __name__
+    #print __name__
     app.run(host='0.0.0.0', port=8080, debug=True)
 # [END app]
 
