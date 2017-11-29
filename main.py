@@ -33,11 +33,13 @@ import jinja2
 #from dbconnect import connection, run_query           
 
 app = Flask(__name__)
+print type(app)
 app.secret_key='Clave_secreta'
 # csrf = SeaSurf(app)
 #Talisman(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
+#app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:p3nt35t1ng@127.0.0.1/aula_virtual"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -300,7 +302,7 @@ def profile():
     pais = request.form['pais']  
     nota = request.form['nota']  
     habilidades = request.form['habilidades']  
-    print habilidades
+    
     interes = Intereses.query.filter_by(email=session['email']).first()
 
     if interes:
@@ -535,7 +537,6 @@ def clase_habilitar():
         html_content = { 'temas': temas }
         return rendering_template(JINJA_ENVIRONMENT.get_template('tema_selec.html').render(html_content), 'Material', 'Consulte el material disponible')
     habilitar = request.form['hab']
-
     return redirect(url_for('material_tema'))
 
 @app.route('/subtema_habilitar', methods=['GET','POST'])
@@ -553,7 +554,7 @@ def subtema_habilitar():
     db.session.commit()
     return redirect(url_for('clase_material'))
 
-@app.route('/clase_material', methods=['GET','POST'])
+@app.route('/clase_material', methods=['GET'])
 def clase_material():
     """Return a friendly HTTP greeting."""
     
@@ -561,8 +562,6 @@ def clase_material():
         temas = Temas.query.filter_by(id_grupo=session['grupo']).all()
         html_content = { 'temas': temas }
         return rendering_template(JINJA_ENVIRONMENT.get_template('material_clases.html').render(html_content), 'Material', 'Consulte el material disponible')
-    nombre = request.form['idioma']
-    return nombre
 
 @app.route('/material_tema', methods=['GET','POST'])
 def material_tema():
@@ -612,7 +611,7 @@ def podcast_video():
     """Return a friendly HTTP greeting."""
     
     if request.method == 'GET':
-        consulta = 'SELECT * FROM podcasts WHERE tipo = "video";'
+        #consulta = 'SELECT * FROM podcasts WHERE tipo = "video";'
         podcasts_video =  Podcasts.query.filter_by(tipo='video')
         html_content = { 'info_video': podcasts_video} #podvideo.html
         return rendering_template(JINJA_ENVIRONMENT.get_template('miniatura.html').render(html_content), "Podcast en Video", 'Ve a espertos hablar de un tema')
@@ -848,8 +847,7 @@ def messasgesave():
     """Return a friendly HTTP greeting."""
     
     if request.method == 'POST':
-        id_tema = request.form['tema_id']
-        print id_tema
+        id_tema = request.form['tema_id']        
         mensaje = request.form['mensaje']
         #print mensaje
         #run_query('INSERT INTO mensajes (email, id_tema, fecha, mensaje) VALUES ("%s", "%s", NOW(), "%s");' %(session['email'], id_tema, mensaje))
@@ -947,6 +945,7 @@ def server_error(e):
 if __name__ == '__main__':
     # This is used when running locally. Gunicorn is used to run the
     # application on Google App Engine. See entrypoint in app.yaml.
+    print __name__
     app.run(host='0.0.0.0', port=8080, debug=True)
 # [END app]
 
