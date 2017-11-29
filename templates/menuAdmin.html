@@ -23,8 +23,8 @@
                 <thead>                  
                 <tr>
                     <th>Nombre</th>
-                    <th>Usuario(email)</th>
-                    <th>Rol</th>                    
+                    <th>Email</th>
+                    <th>Perfil</th>                    
                     <th>Accion</th>                    
                 </tr>
                 </thead>
@@ -43,8 +43,8 @@
                 <tfoot>
                 <tr>                 
                   <th>Nombre</th>               
-                  <th>Usuario(email)</th>
-                  <th>Rol</th>                    
+                  <th>Email</th>
+                  <th>Perfil</th>                    
                   <th>Accion</th>                                 
                 </tr>
                 </tfoot>
@@ -53,6 +53,46 @@
             <!-- /.box-body -->
           </div>
         </div>       
+
+        <div class="col-md-6">
+          <div class="box">
+              <div class="box-header">
+                <h3 class="box-title">Biblioteca</h3>
+              </div>
+              <!-- /.box-header -->
+              <div class="box-body">
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>                  
+                  <tr>
+                      <th>ID</th>
+                      <th>Titulo</th>
+                      <th>ISBN o ISSN</th>                    
+                      <th>Accion</th>                    
+                  </tr>
+                  </thead>
+                  <tbody>          
+                    {%- for libro in libros -%}                    
+                    <tr>
+                      <td> {{ libro.id }} </td>    
+                      <td> {{ libro.titulo }} </td>      
+                      <td> {{ libro.ISSNISBN }} </td>                    
+                      <td><a href="/eliminar?base=biblioteca&id={{ libro.id }}" class="btn btn-danger btn-md"> Eliminar </a></td>                                   
+                    </tr>                    
+                    {%- endfor -%}
+                  </tbody>
+                  <tfoot>
+                  <tr>                 
+                    <th>ID</th>
+                    <th>Titulo</th>
+                    <th>ISBN o ISSN</th>                    
+                    <th>Accion</th>                                  
+                  </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.box-body -->
+            </div>
+          </div>            
          <!-- Despliegue de Clases  -->
          <div class="col-md-6">
           <div class="box">
@@ -64,9 +104,10 @@
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>                  
                   <tr>
-                      <th>Id Tema</th>
+                      <th>ID</th>
                       <th>Tema</th>
-                      <th>Creador</th>                    
+                      <th>Creador</th>  
+                      <th>Grupo</th>                    
                       <th>Accion</th>                    
                   </tr>
                   </thead>
@@ -75,16 +116,18 @@
                     <tr>
                       <td> {{ clase.id_tema }} </td>      
                       <td> {{ clase.tema }} </td>      
-                      <td> {{ clase.email }} </td>                    
+                      <td> {{ clase.email }} </td>   
+                      <td> {{ clase.id_grupo }} </td>                    
                       <td><a href="/eliminar?base=tema&id={{ clase.id_tema }}" class="btn btn-danger btn-md"> Eliminar </a></td>                                   
                     </tr>
                     {%- endfor -%}
                   </tbody>
                   <tfoot>
                   <tr>
-                    <th>Id Tema</th>
+                    <th>ID</th>
                     <th>Tema</th>
                     <th>Creador</th>                    
+                    <th>Grupo</th>  
                     <th>Accion</th>                                 
                   </tr>
                   </tfoot>
@@ -93,4 +136,82 @@
               <!-- /.box-body -->
             </div>
           </div>     
+          <div class="col-md-6">
+            <div class="box">
+                <div class="box-header">
+                  <h3 class="box-title">Contenido Complementario</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                  <table id="example1" class="table table-bordered table-striped">
+                    <thead>                  
+                    <tr>
+                        <th>ID</th>
+                        <th>Titulo</th>
+                        <th>creador</th>                    
+                        <th>Accion</th>                    
+                    </tr>
+                    </thead>
+                    <tbody>
+                      {%- for mooc in moocs -%}
+                      <tr>
+                        <td> {{ mooc.id_mooc }} </td>      
+                        <td> {{ mooc.titulo }} </td>      
+                        <td> {{ mooc.email }} </td>                    
+                        <td><a href="/eliminar?base=complementario&id={{ mooc.id_mooc }}" class="btn btn-danger btn-md"> Eliminar </a></td>                                   
+                      </tr>
+                      {%- endfor -%}
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                      <th>ID</th>
+                      <th>Titulo</th>
+                      <th>Creador</th>                    
+                      <th>Accion</th>                                 
+                    </tr>
+                    </tfoot>
+                  </table>
+                </div>
+                <!-- /.box-body -->
+              </div>
+            </div>     
+            <div class="col-md-6">
+              <div class="box">
+                  <div class="box-header">
+                    <h3 class="box-title">Temas de Foro</h3>
+                  </div>
+                  <!-- /.box-header -->
+                  <div class="box-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                      <thead>                  
+                      <tr>
+                          <th>ID</th>
+                          <th>Titulo</th>
+                          <th>Creador</th>                    
+                          <th>Accion</th>                    
+                      </tr>
+                      </thead>
+                      <tbody>
+                        {%- for mensaje in foro -%}
+                        <tr>
+                          <td> {{ mensaje.id_tema }} </td>      
+                          <td> {{ mensaje.titulo }} </td>      
+                          <td> {{ mensaje.autor }} </td>                    
+                          <td><a href="/eliminar?base=foro&id={{ mensaje.id_tema }}" class="btn btn-danger btn-md"> Eliminar </a></td>                                   
+                        </tr>
+                        {%- endfor -%}
+                      </tbody>
+                      <tfoot>
+                      <tr>
+                        <th>ID</th>
+                        <th>Titulo</th>
+                        <th>Creador</th>                    
+                        <th>Accion</th>                                 
+                      </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  <!-- /.box-body -->
+                </div>
+              </div>                         
 </div>

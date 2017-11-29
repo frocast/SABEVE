@@ -933,7 +933,10 @@ def menuAdmin():
         print eliminado
         usuarios = Usuarios.query.all()
         clases = Temas.query.all()
-        html_content = {'usuarios':usuarios, 'clases': clases, 'eliminado':eliminado}    
+        moocs = Moocs.query.all()
+        foro = Foro.query.all()
+        libros = Biblioteca.query.all()
+        html_content = {'usuarios': usuarios,'clases': clases,'moocs': moocs,'foro': foro,'libros': libros,'eliminado': eliminado}    
         return rendering_template(JINJA_ENVIRONMENT.get_template('menuAdmin.html').render(html_content), 'Menu de Administracion', '') #prueba_template.render(valores)#render_template('starter.html', creadores = jinja2.Template.render(render_template('formulario.html')))	
 
     return redirect(url_for('inicio'))
@@ -950,9 +953,21 @@ def eliminar():
             db.session.delete(usuario)
             db.session.commit()            
         elif base == "tema":
-            usuario = Temas.query.filter_by(email=id_eliminar).first()
-            db.session.delete(usuario)
+            tema = Temas.query.filter_by(id_tema=id_eliminar).first()
+            db.session.delete(tema)
             db.session.commit()
+        elif base == "complementario":
+            mooc = Moocs.query.filter_by(id_mooc=id_eliminar).first()
+            db.session.delete(mooc)
+            db.session.commit()
+        elif base == "foro":
+            mensaje = Foro.query.filter_by(id_tema=id_eliminar).first()
+            db.session.delete(mensaje)
+            db.session.commit()
+        elif base == "biblioteca":
+            libro = Biblioteca.query.filter_by(id=id_eliminar).first()
+            db.session.delete(libro)
+            db.session.commit()            
         else:
             return redirect(url_for('menuAdmin',eexit=False))  
     return redirect(url_for('menuAdmin',eexit=True))  
