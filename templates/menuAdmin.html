@@ -213,5 +213,45 @@
                   </div>
                   <!-- /.box-body -->
                 </div>
-              </div>                         
+              </div>  
+              
+              <div class="col-md-6">
+                <div class="box">
+                    <div class="box-header">
+                      <h3 class="box-title">Grupos</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                      <table id="example1" class="table table-bordered table-striped">
+                        <thead>                  
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Creador</th>                    
+                            <th>Accion</th>                    
+                        </tr>
+                        </thead>
+                        <tbody>
+                          {%- for grupo in grupos -%}
+                          <tr>
+                            <td> {{ grupo.id_grupo }} </td>      
+                            <td> {{ grupo.nombre }} </td>      
+                            <td> {{ grupo.email }} </td>                    
+                            <td><a href="/eliminar?base=grupo&id={{ grupo.id_grupo }}" class="btn btn-danger btn-md"> Eliminar </a></td>                                   
+                          </tr>
+                          {%- endfor -%}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                          <th>ID</th>
+                          <th>Titulo</th>
+                          <th>Creador</th>                    
+                          <th>Accion</th>                                 
+                        </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                    <!-- /.box-body -->
+                  </div>
+                </div>                
 </div>

@@ -25,6 +25,7 @@ import os
 import jwt
 
 from flask import Flask, render_template, request, redirect, session, url_for, jsonify, make_response
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_talisman import Talisman
 # from flask_seasurf import SeaSurf
 from flask_sqlalchemy import SQLAlchemy
@@ -41,8 +42,9 @@ app.secret_key='Clave_secreta'
 # csrf = SeaSurf(app)
 Talisman(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 #app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:p3nt35t1ng@127.0.0.1/aula_virtual"
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:root@127.0.0.1:8889/aula_virtual"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -57,12 +59,12 @@ db = SQLAlchemy(app)
 class Usuarios(db.Model):
     Nombre = db.Column(db.String(30))
     Apellido = db.Column(db.String(30))
-    email = db.Column(db.String(30), primary_key=True)
+    email = db.Column(db.String(50), primary_key=True)
     knd = db.Column(db.String(20))
     fecha_na = db.Column(db.String(15))
     institucion = db.Column(db.String(200))
     genero = db.Column(db.String(10))
-    pasw = db.Column(db.String(20)) 
+    pasw = db.Column(db.String(500)) 
     id_grupo = db.Column(db.Integer)      
 
     def __init__(self, nombre, apellido, email, knd, fecha_na, institucion, genero, pasw, id_grupo):
@@ -263,14 +265,19 @@ def rendering_template(content_rendered = None, head_title = '', head_descriptio
     html_content = { 'content':content_rendered, 'head_title':head_title, 'head_description':head_description, 'email':session['email'], 'nombre':session['nombre'], 'tipo':session['kind'], 'fecha_na': session['fecha_na']}
     return template.render(html_content)
 
-@app.route('/create_tables', methods=['GET'])
-def create_tables():
-    """Return a friendly HTTP greeting."""
+@app.route('/create_tables/<password>', methods=['GET'])
+def create_tables(password):
+    """Return a friendly HTTP greeting."""    
     try:
         db.create_all()
+        usuario = Usuarios.query.filter_by(email='fvelav0900@alumno.ipn').first()
+        if not usuario or password:
+            usuario = Usuarios('Fabiola Sandra','Vela Vazquez','fvelav0900@alumno.ipn','Admin','31/08/1991','ESIME','Mujer',generate_password_hash(password),0)
+            db.session.add(usuario)
+            db.session.commit()
         return "Tablas Creadas con exito"
-    except e:
-        return e
+    except:
+        return "Error Creando Tablas"
 
 @app.route('/', methods=['GET','POST'])
 def inicio():
@@ -333,36 +340,36 @@ def login():
     email = request.form['email']
     pasw = request.form['pssw']
     
-    usuarios = Usuarios.query.filter_by(email=email).all()
-    
+    usuario = Usuarios.query.filter_by(email=email).first()  
+    if not usuario:
+        return redirect('/')
     #consulta = 'SELECT email, pasw, Nombre, knd, fecha_na FROM usuarios WHERE email = "%s";' %email
     #result = run_query(consulta)    
         # if result[0][0] == email and result[0][1] == pasw:
         #     session['email'] = email
         #     session['nombre'] = result[0][2]
         #     session['kind'] = result[0][3]
-        #     session['fecha_na'] = result[0][4]
-    try:
-        for usuario in usuarios:
-            if usuario.email == email and usuario.pasw == pasw:
-                session['email'] = usuario.email
-                session['nombre'] = usuario.Nombre
-                session['kind'] = usuario.knd
-                session['fecha_na'] = usuario.fecha_na
-                session['grupo'] = usuario.id_grupo
+        #     session['fecha_na'] = result[0][4]        
+    try:        
+        if usuario.email == email and check_password_hash(usuario.pasw,pasw):
+            session['email'] = usuario.email
+            session['nombre'] = usuario.Nombre
+            session['kind'] = usuario.knd
+            session['fecha_na'] = usuario.fecha_na
+            session['grupo'] = usuario.id_grupo
     except: 
         return "Error en el Servidor"
     return redirect('/')
 
 @app.route('/logout', methods=['GET','POST'])
 def logout():
-    print len(session)
+    #print len(session)
     session.pop('email',None)
     session.pop('nombre',None)
     session.pop('kind',None)
     session.pop('fecha_na',None)   
     session.pop('grupo',None)   
-    print len(session)
+    #print len(session)
     # revisar funcion pop session.pop('apellido',None)
     return redirect('/login')    
 
@@ -390,8 +397,8 @@ def register():
             # Agregar comprobación de usuario existente
             if name and lastName and email and pasw and paswc and terms and knd and institucion and fecha_na and genero:
                 if terms == "True":
-                    if pasw == paswc:
-                        usuario = Usuarios(name, lastName, email, knd, fecha_na, institucion, genero, pasw, id_grupo)
+                    if pasw == paswc:                        
+                        usuario = Usuarios(name, lastName, email, knd, fecha_na, institucion, genero, generate_password_hash(pasw), id_grupo)
                         db.session.add(usuario)
                         db.session.commit()
                         #query = 'INSERT INTO usuarios (Nombre, Apellido, email, knd, fecha_na, institucion, genero, pasw) VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s");' %(name, lastName, email, knd, fecha_na, institucion, genero, pasw)
@@ -562,7 +569,11 @@ def subtema_habilitar():
 def clase_material():
     """Return a friendly HTTP greeting."""
     
-    if request.method == 'GET':        
+    if request.method == 'GET':  
+        if session['kind'] == 'Profesor':
+            temas = Temas.query.filter_by(email=session['email']).all()
+            html_content = { 'temas': temas }
+            return rendering_template(JINJA_ENVIRONMENT.get_template('material_clases.html').render(html_content), 'Material', 'Consulte el material disponible')        
         temas = Temas.query.filter_by(id_grupo=session['grupo']).all()
         html_content = { 'temas': temas }
         return rendering_template(JINJA_ENVIRONMENT.get_template('material_clases.html').render(html_content), 'Material', 'Consulte el material disponible')
@@ -699,19 +710,18 @@ def registro_mooc():
     
     #run_query('INSERT INTO contenido_mooc (id_mooc, titulo, url, email) VALUES ("%s", "%s", "%s", "%s");' %(id_mooc, titulo_video, link, session['email']))
     #run_query('INSERT INTO evaluaciones (id_mooc, pregunta, respuesta_1, respuesta_2, respuesta_3) VALUES ("%s", "%s", "%s", "%s", "%s");' %(id_mooc, pregunta, r1, r2, r3))
-    try:
-        contenido_mooc = Contenido_mooc(id_mooc, titulo_video, link, session['email'])
-        db.session.commit() 
-        db.session.add(contenido_mooc) 
+    
+    contenido_mooc = Contenido_mooc(id_mooc, titulo_video, link, session['email'])
+    db.session.commit() 
+    db.session.add(contenido_mooc) 
             
-        id_con = Contenido_mooc.query.filter_by(id_mooc=id_mooc, titulo=titulo_video, url=link, email=session['email']).first() 
-        evaluacion = Evaluaciones(id_con.id_contenido, pregunta, r1, r2, r3)       
-        db.session.add(evaluacion)
-        db.session.commit() 
-        html_content = {'ruta':'consulta_tema_mooc', 'd_ruta':'Regresar a Moocs'}
-        return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), "Registro de Nuevo Contenido", 'Aprender de forma sencilla')
-    except :
-        return "Error"
+    id_con = Contenido_mooc.query.filter_by(id_mooc=id_mooc, titulo=titulo_video, url=link, email=session['email']).first() 
+    evaluacion = Evaluaciones(id_con.id_contenido, pregunta, r1, r2, r3)       
+    db.session.add(evaluacion)
+    db.session.commit() 
+    html_content = {'ruta':'consulta_tema_mooc', 'd_ruta':'Regresar a Moocs'}
+    return rendering_template(JINJA_ENVIRONMENT.get_template('success.html').render(html_content), "Registro de Nuevo Contenido", 'Aprender de forma sencilla')
+
 
 @app.route('/consulta_tema_mooc', methods=['GET','POST'])
 def consulta_tema_mooc():
@@ -936,7 +946,14 @@ def menuAdmin():
         moocs = Moocs.query.all()
         foro = Foro.query.all()
         libros = Biblioteca.query.all()
-        html_content = {'usuarios': usuarios,'clases': clases,'moocs': moocs,'foro': foro,'libros': libros,'eliminado': eliminado}    
+        grupos = Grupos.query.all()
+        html_content = {'usuarios': usuarios,
+                        'clases': clases,
+                        'moocs': moocs,
+                        'foro': foro,
+                        'libros': libros,
+                        'eliminado': eliminado,
+                        'grupos':grupos}    
         return rendering_template(JINJA_ENVIRONMENT.get_template('menuAdmin.html').render(html_content), 'Menu de Administracion', '') #prueba_template.render(valores)#render_template('starter.html', creadores = jinja2.Template.render(render_template('formulario.html')))	
 
     return redirect(url_for('inicio'))
@@ -967,7 +984,11 @@ def eliminar():
         elif base == "biblioteca":
             libro = Biblioteca.query.filter_by(id=id_eliminar).first()
             db.session.delete(libro)
-            db.session.commit()            
+            db.session.commit()   
+        elif base == "grupo":
+            grupo = Grupos.query.filter_by(id_grupo=id_eliminar).first()
+            db.session.delete(grupo)
+            db.session.commit()          
         else:
             return redirect(url_for('menuAdmin',eexit=False))  
     return redirect(url_for('menuAdmin',eexit=True))  
