@@ -42,9 +42,9 @@ app.secret_key='Clave_secreta'
 # csrf = SeaSurf(app)
 Talisman(app)
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 #app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:p3nt35t1ng@127.0.0.1/aula_virtual"
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:root@127.0.0.1:8889/aula_virtual"
+#app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:root@127.0.0.1:8889/aula_virtual"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
